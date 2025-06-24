@@ -16,37 +16,35 @@ void main(List<String> args) => grind(args);
 @DefaultTask()
 @Task()
 Future<void> validate() async {
-  // Test it.
-  await TestRunner().testAsync();
+    // Test it.
+    await TestRunner().testAsync();
 
-  // Make sure it's warning clean.
-  Analyzer.analyze('bin/format.dart', fatalWarnings: true);
+    // Make sure it's warning clean.
+    Analyzer.analyze('bin/format.dart', fatalWarnings: true);
 
-  // Format it.
-  Dart.run('bin/format.dart', arguments: ['.']);
+    // Format it.
+    Dart.run('bin/format.dart', arguments: ['.']);
 }
 
 /// Increments the patch version of the current version.
 @Task()
 Future<void> patch() async {
-  var version = _readVersion();
-  _updateVersion(
-    Version(version.major, version.minor, version.patch + 1, pre: 'wip'),
-  );
+    var version = _readVersion();
+    _updateVersion(Version(version.major, version.minor, version.patch + 1, pre: 'wip'));
 }
 
 /// Increments the minor version of the current version.
 @Task()
 Future<void> minor() async {
-  var version = _readVersion();
-  _updateVersion(Version(version.major, version.minor + 1, 0, pre: 'wip'));
+    var version = _readVersion();
+    _updateVersion(Version(version.major, version.minor + 1, 0, pre: 'wip'));
 }
 
 /// Increments the major version of the current version.
 @Task()
 Future<void> major() async {
-  var version = _readVersion();
-  _updateVersion(Version(version.major + 1, 0, 0, pre: 'wip'));
+    var version = _readVersion();
+    _updateVersion(Version(version.major + 1, 0, 0, pre: 'wip'));
 }
 
 /// Gets ready to publish a new version of the package.
@@ -73,51 +71,51 @@ Future<void> major() async {
 @Task()
 @Depends(validate)
 Future<void> ship() async {
-  var version = _readVersion();
+    var version = _readVersion();
 
-  // Require a "-wip" version since we don't otherwise know what to bump it to.
-  if (!version.isPreRelease) {
-    throw StateError('Cannot publish non-wip version $version.');
-  }
+    // Require a "-wip" version since we don't otherwise know what to bump it to.
+    if (!version.isPreRelease) {
+        throw StateError('Cannot publish non-wip version $version.');
+    }
 
-  // Don't allow versions like "1.2.3-dev+4" because it's not clear if the
-  // user intended the "+4" to be discarded or not.
-  if (version.build.isNotEmpty) {
-    throw StateError('Cannot publish build version $version.');
-  }
+    // Don't allow versions like "1.2.3-dev+4" because it's not clear if the
+    // user intended the "+4" to be discarded or not.
+    if (version.build.isNotEmpty) {
+        throw StateError('Cannot publish build version $version.');
+    }
 
-  // Remove the pre-release suffix.
-  _updateVersion(Version(version.major, version.minor, version.patch));
+    // Remove the pre-release suffix.
+    _updateVersion(Version(version.major, version.minor, version.patch));
 }
 
 /// Reads the current package version from the pubspec.
 Version _readVersion() {
-  var pubspecFile = getFile('pubspec.yaml');
-  var pubspec = pubspecFile.readAsStringSync();
-  return Version.parse((yaml.loadYaml(pubspec) as Map)['version'] as String);
+    var pubspecFile = getFile('pubspec.yaml');
+    var pubspec = pubspecFile.readAsStringSync();
+    return Version.parse((yaml.loadYaml(pubspec) as Map)['version'] as String);
 }
 
 /// Sets version numbers in the dart_style repository with [version].
 void _updateVersion(Version version) {
-  // Read the version from the pubspec.
-  var pubspecFile = getFile('pubspec.yaml');
-  var pubspec = pubspecFile.readAsStringSync();
+    // Read the version from the pubspec.
+    var pubspecFile = getFile('pubspec.yaml');
+    var pubspec = pubspecFile.readAsStringSync();
 
-  // Update the version in the pubspec.
-  pubspec = pubspec.replaceAll(_versionPattern, 'version: $version');
-  pubspecFile.writeAsStringSync(pubspec);
+    // Update the version in the pubspec.
+    pubspec = pubspec.replaceAll(_versionPattern, 'version: $version');
+    pubspecFile.writeAsStringSync(pubspec);
 
-  // Update the version constant in formatter_options.dart (minus any
-  // pre-release prefix). We do this eagerly so that the version number shown
-  // by `dart format --version` is the version that *will* be published, even
-  // though we roll into the Dart SDK before publishing the final version.
-  var withoutPrerelease = Version(version.major, version.minor, version.patch);
-  var versionFile = getFile('lib/src/cli/formatter_options.dart');
-  var versionSource = versionFile.readAsStringSync().replaceAll(
-    RegExp(r"const dartStyleVersion = '[^']+';"),
-    "const dartStyleVersion = '$withoutPrerelease';",
-  );
-  versionFile.writeAsStringSync(versionSource);
+    // Update the version constant in formatter_options.dart (minus any
+    // pre-release prefix). We do this eagerly so that the version number shown
+    // by `dart format --version` is the version that *will* be published, even
+    // though we roll into the Dart SDK before publishing the final version.
+    var withoutPrerelease = Version(version.major, version.minor, version.patch);
+    var versionFile = getFile('lib/src/cli/formatter_options.dart');
+    var versionSource = versionFile.readAsStringSync().replaceAll(
+        RegExp(r"const dartStyleVersion = '[^']+';"),
+        "const dartStyleVersion = '$withoutPrerelease';",
+    );
+    versionFile.writeAsStringSync(versionSource);
 
-  log("Updated version to '$version'.");
+    log("Updated version to '$version'.");
 }

@@ -34,10 +34,7 @@ abstract base class InfixPiece extends Piece {
     }
 
     /// Creates an [InfixPiece] for a conditional (`?:`) expression.
-    factory InfixPiece.conditional(
-        List<Piece> operands, {
-        required bool version37,
-    }) {
+    factory InfixPiece.conditional(List<Piece> operands, {required bool version37}) {
         if (version37) {
             return _InfixPieceV37(operands, Indent.expression);
         } else {
@@ -51,8 +48,7 @@ abstract base class InfixPiece extends Piece {
     List<State> get additionalStates => const [State.split];
 
     @override
-    Set<Shape> allowedChildShapes(State state, Piece child) =>
-            Shape.anyIf(state == State.split);
+    Set<Shape> allowedChildShapes(State state, Piece child) => Shape.anyIf(state == State.split);
 
     @override
     void forEachChild(void Function(Piece piece) callback) {
@@ -139,8 +135,7 @@ final class _InfixPieceV37 extends InfixPiece {
             // We can format each operand separately if the operand is on its own
             // line. This happens when the operator is split and we aren't the first
             // or last operand.
-            var separate =
-                    state == State.split && i > 0 && i < _operands.length - 1;
+            var separate = state == State.split && i > 0 && i < _operands.length - 1;
 
             writer.format(_operands[i], separate: separate);
             if (i < _operands.length - 1) writer.splitIf(state == State.split);

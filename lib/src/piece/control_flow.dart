@@ -39,8 +39,7 @@ final class ControlFlowPiece extends Piece {
     }
 
     @override
-    Set<Shape> allowedChildShapes(State state, Piece child) =>
-            Shape.anyIf(state == State.split);
+    Set<Shape> allowedChildShapes(State state, Piece child) => Shape.anyIf(state == State.split);
 
     @override
     bool containsNewline(State state) {

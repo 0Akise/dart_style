@@ -70,8 +70,7 @@ enum Indent {
         grouping => GlobalIndentConfig.grouping,
         infix => GlobalIndentConfig.infix,
         initializer => GlobalIndentConfig.initializer,
-        initializerWithOptionalParameter =>
-            GlobalIndentConfig.initializerWithOptionalParameter,
+        initializerWithOptionalParameter => GlobalIndentConfig.initializerWithOptionalParameter,
     };
 }
 
@@ -156,13 +155,8 @@ final class CodeWriter {
     /// beginning of the first line and [subsequentIndent] is the indentation of
     /// each line after that, independent of indentation created by pieces being
     /// written.
-    CodeWriter(
-        this._pageWidth,
-        int leadingIndent,
-        int subsequentIndent,
-        this._cache,
-        this._solution,
-    ) : _code = GroupCode(leadingIndent) {
+    CodeWriter(this._pageWidth, int leadingIndent, int subsequentIndent, this._cache, this._solution)
+        : _code = GroupCode(leadingIndent) {
         _indentStack.add(_IndentLevel(Indent.none, leadingIndent));
 
         // Track the leading indent before the first line.
@@ -283,9 +277,7 @@ final class CodeWriter {
 
             // Increase the indentation and note that it can be collapsed with
             // further indentation.
-            _indentStack.add(
-                _IndentLevel.v37(parentIndent + indent.spaces, indent.spaces),
-            );
+            _indentStack.add(_IndentLevel.v37(parentIndent + indent.spaces, indent.spaces));
         } else {
             // Regular indentation, so just increase the indent.
             _indentStack.add(_IndentLevel.v37(parentIndent + indent.spaces, 0));
@@ -323,10 +315,7 @@ final class CodeWriter {
     /// any surrounding indentation. This is used for multi-line block comments
     /// and multi-line strings.
     void newline({bool blank = false, bool flushLeft = false}) {
-        whitespace(
-            blank ? Whitespace.blankLine : Whitespace.newline,
-            flushLeft: flushLeft,
-        );
+        whitespace(blank ? Whitespace.blankLine : Whitespace.newline, flushLeft: flushLeft);
     }
 
     /// Queues [whitespace] to be written to the output.
@@ -398,8 +387,7 @@ final class CodeWriter {
 
     /// Format [piece] writing directly into this [CodeWriter].
     void _formatInline(Piece piece) {
-        var isUnsolved =
-                !_solution.isBound(piece) && piece.additionalStates.isNotEmpty;
+        var isUnsolved = !_solution.isBound(piece) && piece.additionalStates.isNotEmpty;
 
         // See if we can immediately bind it based on the page width and the piece's
         // contents.
@@ -411,10 +399,7 @@ final class CodeWriter {
             // indication into account which may vary based on the surrounding pieces
             // when we get here.
             Profile.begin('CodeWriter try to bind by page width');
-            isUnsolved = !_solution.tryBindByPageWidth(
-                piece,
-                _pageWidth - _indentStack.first.spaces,
-            );
+            isUnsolved = !_solution.tryBindByPageWidth(piece, _pageWidth - _indentStack.first.spaces);
             Profile.end('CodeWriter try to bind by page width');
         }
 
@@ -433,10 +418,7 @@ final class CodeWriter {
 
         // Now that we know the child's shape, see if the parent permits it.
         if (_pieceFormats.lastOrNull case var parent?) {
-            var allowedShapes = parent.piece.allowedChildShapes(
-                _solution.pieceState(parent.piece),
-                child.piece,
-            );
+            var allowedShapes = parent.piece.allowedChildShapes(_solution.pieceState(parent.piece), child.piece);
 
             bool invalid;
             if (_cache.isVersion37) {
@@ -493,10 +475,7 @@ final class CodeWriter {
             case Whitespace.blankLine:
                 _finishLine();
                 _column = _pendingIndent;
-                _code.newline(
-                    blank: _pendingWhitespace == Whitespace.blankLine,
-                    indent: _column,
-                );
+                _code.newline(blank: _pendingWhitespace == Whitespace.blankLine, indent: _column);
 
             case Whitespace.space:
                 _code.write(' ');
@@ -516,8 +495,7 @@ final class CodeWriter {
         // we can try to split, then remember them so that the solution will expand
         // them next.
         if (_foundExpandLine) return;
-        if (_currentLinePieces.isNotEmpty &&
-                (_column > _pageWidth || !_solution.isValid)) {
+        if (_currentLinePieces.isNotEmpty && (_column > _pageWidth || !_solution.isValid)) {
             _expandPieces.addAll(_currentLinePieces);
             _foundExpandLine = true;
         } else {
@@ -534,8 +512,7 @@ final class CodeWriter {
             ShapeMode.beforeHeadline => Shape.other,
             // If there were no newlines inside the headline, now that there is one,
             // we have a headline shape.
-            ShapeMode.afterHeadline when state.shape == Shape.inline =>
-                Shape.headline,
+            ShapeMode.afterHeadline when state.shape == Shape.inline => Shape.headline,
             // If there was already a newline in the headline, preserve that shape.
             ShapeMode.afterHeadline => state.shape,
             ShapeMode.other => Shape.other,

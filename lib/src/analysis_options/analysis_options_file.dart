@@ -38,16 +38,9 @@ Future<AnalysisOptions> findAnalysisOptions(
     ResolvePackageUri? resolvePackageUri,
 }) async {
     while (true) {
-        var optionsPath = await fileSystem.join(
-            directory,
-            'analysis_options.yaml',
-        );
+        var optionsPath = await fileSystem.join(directory, 'analysis_options.yaml');
         if (await fileSystem.fileExists(optionsPath)) {
-            return readAnalysisOptions(
-                fileSystem,
-                optionsPath,
-                resolvePackageUri: resolvePackageUri,
-            );
+            return readAnalysisOptions(fileSystem, optionsPath, resolvePackageUri: resolvePackageUri);
         }
 
         var parent = await fileSystem.parentDirectory(directory);
@@ -87,29 +80,19 @@ Future<AnalysisOptions> readAnalysisOptions(
                 if (filePath != null) {
                     include = filePath;
                 } else {
-                    throw PackageResolutionException(
-                        'Failed to resolve package URI "$include" in include.',
-                    );
+                    throw PackageResolutionException('Failed to resolve package URI "$include" in include.');
                 }
             } else {
                 throw PackageResolutionException(
-                    'Couldn\'t resolve package URI "$include" in include because '
-                    'no package resolver was provided.',
+                    'Couldn\'t resolve package URI "$include" in include because no package resolver was provided.',
                 );
             }
         }
 
         // The include path may be relative to the directory containing the current
         // options file.
-        var includePath = await fileSystem.join(
-            (await fileSystem.parentDirectory(optionsPath))!,
-            include,
-        );
-        return await readAnalysisOptions(
-            fileSystem,
-            includePath,
-            resolvePackageUri: resolvePackageUri,
-        );
+        var includePath = await fileSystem.join((await fileSystem.parentDirectory(optionsPath))!, include);
+        return await readAnalysisOptions(fileSystem, includePath, resolvePackageUri: resolvePackageUri);
     }
 
     // If there is an `include:` key with a String value, then load that and merge
@@ -133,17 +116,13 @@ Future<AnalysisOptions> readAnalysisOptions(
                     );
                 }
                 var includeOptions = await optionsFromInclude(include);
-                mergedIncludeOptions =
-                        merge(mergedIncludeOptions, includeOptions)
-                                as AnalysisOptions;
+                mergedIncludeOptions = merge(mergedIncludeOptions, includeOptions) as AnalysisOptions;
             }
             options = merge(mergedIncludeOptions, options) as AnalysisOptions;
         case null:
             break;
         case Object include:
-            throw PackageResolutionException(
-                'Unsupported "include" value in analysis options: "$include".',
-            );
+            throw PackageResolutionException('Unsupported "include" value in analysis options: "$include".');
     }
 
     return options;

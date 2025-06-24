@@ -80,11 +80,7 @@ final class PositionalRule extends ArgumentRule {
             addConstraint(value, collectionRule!, Rule.unsplit);
         }
 
-        for (
-            var argument = argumentCount - trailingCollections;
-            argument < argumentCount;
-            argument++
-        ) {
+        for (var argument = argumentCount - trailingCollections; argument < argumentCount; argument++) {
             var value = argumentCount - argument + 1;
             addConstraint(value, collectionRule!, Rule.unsplit);
         }
@@ -129,11 +125,7 @@ final class PositionalRule extends ArgumentRule {
                 if (chunk == _arguments[i]) return false;
             }
 
-            for (
-                var i = _arguments.length - _trailingCollections;
-                i < _arguments.length;
-                i++
-            ) {
+            for (var i = _arguments.length - _trailingCollections; i < _arguments.length; i++) {
                 if (chunk == _arguments[i]) return false;
             }
 
@@ -180,11 +172,7 @@ final class NamedRule extends ArgumentRule {
     /// If [collectionRule] is given, it is the rule used to split the collection
     /// arguments in the list. It must be provided if [leadingCollections] or
     /// [trailingCollections] is non-zero.
-    NamedRule(
-        Rule? collectionRule,
-        int leadingCollections,
-        int trailingCollections,
-    ) {
+    NamedRule(Rule? collectionRule, int leadingCollections, int trailingCollections) {
         if (leadingCollections > 0 || trailingCollections > 0) {
             // Split only before the first argument. Don't allow the collections to
             // split.

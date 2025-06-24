@@ -57,12 +57,7 @@ final class FormatterOptions {
     /// [changed] will be false.
     ///
     /// If stdin is being formatted, then [file] is `null`.
-    void afterFile(
-        File? file,
-        String displayPath,
-        SourceCode result, {
-        required bool changed,
-    }) {
+    void afterFile(File? file, String displayPath, SourceCode result, {required bool changed}) {
         summary.afterFile(this, file, displayPath, result, changed: changed);
 
         // Save the results to disc.
@@ -72,11 +67,7 @@ final class FormatterOptions {
         }
 
         // Show the user.
-        if (show.file(
-            displayPath,
-            changed: changed,
-            overwritten: overwritten,
-        )) {
+        if (show.file(displayPath, changed: changed, overwritten: overwritten)) {
             output.showFile(displayPath, result);
         }
 

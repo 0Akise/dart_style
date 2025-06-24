@@ -60,14 +60,10 @@ final class Solver {
     /// The first line is indented by [leadingIndent] spaces and all lines after
     /// that are indented by [subsequentIndent]. If [subsequentIndent] is omitted,
     /// defaults to [leadingIndent].
-    Solver(
-        this._cache, {
-        required int pageWidth,
-        int leadingIndent = 0,
-        int? subsequentIndent,
-    }) : _pageWidth = pageWidth,
-             _leadingIndent = leadingIndent,
-             _subsequentIndent = subsequentIndent ?? leadingIndent;
+    Solver(this._cache, {required int pageWidth, int leadingIndent = 0, int? subsequentIndent})
+        : _pageWidth = pageWidth,
+            _leadingIndent = leadingIndent,
+            _subsequentIndent = subsequentIndent ?? leadingIndent;
 
     /// Finds the best set of line splits for [root] piece and returns the
     /// resulting formatted code.

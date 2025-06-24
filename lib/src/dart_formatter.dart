@@ -117,9 +117,7 @@ final class DartFormatter {
             _ => throw ArgumentError('uri must be `null`, a Uri, or a String.'),
         };
 
-        return formatSource(
-            SourceCode(source, uri: uriString, isCompilationUnit: true),
-        ).text;
+        return formatSource(SourceCode(source, uri: uriString, isCompilationUnit: true)).text;
     }
 
     /// Formats the given [source] string containing a single Dart statement.
@@ -145,17 +143,12 @@ final class DartFormatter {
                 text,
                 uri: source.uri,
                 isCompilationUnit: false,
-                selectionStart: source.selectionStart != null
-                        ? source.selectionStart! + inputOffset
-                        : null,
+                selectionStart: source.selectionStart != null ? source.selectionStart! + inputOffset : null,
                 selectionLength: source.selectionLength,
             );
         }
 
-        var featureSet = FeatureSet.fromEnableFlags2(
-            sdkLanguageVersion: languageVersion,
-            flags: experimentFlags,
-        );
+        var featureSet = FeatureSet.fromEnableFlags2(sdkLanguageVersion: languageVersion, flags: experimentFlags);
 
         // Parse it.
         var parseResult = parseString(
@@ -170,9 +163,7 @@ final class DartFormatter {
         if (lineEnding == null) {
             // If the first newline is "\r\n", use that. Otherwise, use "\n".
             var lineStarts = parseResult.lineInfo.lineStarts;
-            if (lineStarts.length > 1 &&
-                    lineStarts[1] >= 2 &&
-                    text[lineStarts[1] - 2] == '\r') {
+            if (lineStarts.length > 1 && lineStarts[1] >= 2 && text[lineStarts[1] - 2] == '\r') {
                 lineEnding = '\r\n';
             } else {
                 lineEnding = '\n';
@@ -180,9 +171,10 @@ final class DartFormatter {
         }
 
         // Throw if there are syntactic errors.
-        var syntacticErrors = parseResult.errors.where((error) {
-            return error.errorCode.type == ErrorType.SYNTACTIC_ERROR;
-        }).toList();
+        var syntacticErrors =
+                parseResult.errors.where((error) {
+                    return error.errorCode.type == ErrorType.SYNTACTIC_ERROR;
+                }).toList();
         if (syntacticErrors.isNotEmpty) {
             throw FormatterException(syntacticErrors);
         }
@@ -191,8 +183,7 @@ final class DartFormatter {
         if (source.isCompilationUnit) {
             node = parseResult.unit;
         } else {
-            var function =
-                    parseResult.unit.declarations[0] as FunctionDeclaration;
+            var function = parseResult.unit.declarations[0] as FunctionDeclaration;
             var body = function.functionExpression.body as BlockFunctionBody;
             node = body.block.statements[0];
 
@@ -225,13 +216,8 @@ final class DartFormatter {
         if (sourceLanguageVersion > latestShortStyleLanguageVersion) {
             // Look for a page width comment before the code.
             int? pageWidthFromComment;
-            for (
-                Token? comment = node.beginToken.precedingComments;
-                comment != null;
-                comment = comment.next
-            ) {
-                if (_widthCommentPattern.firstMatch(comment.lexeme)
-                        case var match?) {
+            for (Token? comment = node.beginToken.precedingComments; comment != null; comment = comment.next) {
+                if (_widthCommentPattern.firstMatch(comment.lexeme) case var match?) {
                     // If integer parsing fails for some reason, the returned `null`
                     // means we correctly ignore the comment.
                     pageWidthFromComment = int.tryParse(match[1]!);

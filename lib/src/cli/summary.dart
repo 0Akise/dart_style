@@ -81,13 +81,9 @@ final class _LineSummary extends Summary {
         if (_files == 0) {
             print('Formatted no files in $time seconds.');
         } else if (_files == 1) {
-            print(
-                'Formatted $_files file ($_changed changed) in $time seconds.',
-            );
+            print('Formatted $_files file ($_changed changed) in $time seconds.');
         } else {
-            print(
-                'Formatted $_files files ($_changed changed) in $time seconds.',
-            );
+            print('Formatted $_files files ($_changed changed) in $time seconds.');
         }
     }
 }

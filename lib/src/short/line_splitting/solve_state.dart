@@ -97,16 +97,14 @@ final class SolveState {
     ///
     /// It's important to track this, because we can't allow to states to overlap
     /// if one permits more values for some unbound rule than the other does.
-    late final Map<Rule, Set<int>> _unboundConstraints =
-            _initUnboundConstraints();
+    late final Map<Rule, Set<int>> _unboundConstraints = _initUnboundConstraints();
 
     /// The bound rules that appear inside lines also containing unbound rules.
     ///
     /// By appearing in the same line, it means these bound rules may affect the
     /// results of binding those unbound rules. This is used to tell if two
     /// states may diverge by binding unbound rules or not.
-    late final Set<Rule> _boundRulesInUnboundLines =
-            _initBoundRulesInUnboundLines();
+    late final Set<Rule> _boundRulesInUnboundLines = _initBoundRulesInUnboundLines();
 
     SolveState(this._splitter, this._ruleValues) {
         Profile.count('Create SolveState');
@@ -197,15 +195,10 @@ final class SolveState {
                     var boundRules = unsplitRules.clone();
 
                     List<Rule>? mustSplitRules;
-                    var valid = boundRules.tryBind(
-                        _splitter.rules,
-                        rule,
-                        value,
-                        (rule) {
-                            mustSplitRules ??= [];
-                            mustSplitRules!.add(rule);
-                        },
-                    );
+                    var valid = boundRules.tryBind(_splitter.rules, rule, value, (rule) {
+                        mustSplitRules ??= [];
+                        mustSplitRules!.add(rule);
+                    });
 
                     // Make sure we don't violate the constraints of the bound rules.
                     if (!valid) continue;
@@ -240,15 +233,13 @@ final class SolveState {
     bool _isOverlapping(SolveState other) {
         // Lines that contain both bound and unbound rules must have the same
         // bound values.
-        if (_boundRulesInUnboundLines.length !=
-                other._boundRulesInUnboundLines.length) {
+        if (_boundRulesInUnboundLines.length != other._boundRulesInUnboundLines.length) {
             return false;
         }
 
         for (var rule in _boundRulesInUnboundLines) {
             if (!other._boundRulesInUnboundLines.contains(rule)) return false;
-            if (_ruleValues.getValue(rule) !=
-                    other._ruleValues.getValue(rule)) {
+            if (_ruleValues.getValue(rule) != other._ruleValues.getValue(rule)) {
                 return false;
             }
         }
@@ -413,9 +404,7 @@ final class SolveState {
             if (chunk is BlockChunk) {
                 if (_splits.shouldSplitAt(i)) {
                     // Include the cost of the nested block.
-                    cost += _splitter.writer
-                            .formatBlock(chunk, _splits.getColumn(i))
-                            .cost;
+                    cost += _splitter.writer.formatBlock(chunk, _splits.getColumn(i)).cost;
                 } else {
                     // Include the nested block inline, if any.
                     length += chunk.unsplitBlockLength;
@@ -551,8 +540,7 @@ final class SolveState {
                     // same bound value, one of which has a satisfied constraint, are
                     // still allowed to overlap.
                     if (constraint == boundValue) continue;
-                    if (constraint == Rule.mustSplit &&
-                            boundValue != Rule.unsplit) {
+                    if (constraint == Rule.mustSplit && boundValue != Rule.unsplit) {
                         continue;
                     }
 

@@ -57,22 +57,13 @@ final class ConfigCache {
         }
 
         // Otherwise, walk the file system and look for it.
-        var config = await _findPackageConfig(
-            file,
-            displayPath,
-            forLanguageVersion: true,
-        );
+        var config = await _findPackageConfig(file, displayPath, forLanguageVersion: true);
 
-        if (config?.packageOf(file.absolute.uri)?.languageVersion
-                case var languageVersion?) {
+        if (config?.packageOf(file.absolute.uri)?.languageVersion case var languageVersion?) {
             // Store the version as pub_semver's [Version] type because that's
             // what the analyzer parser uses, which is where the version
             // ultimately gets used.
-            var version = Version(
-                languageVersion.major,
-                languageVersion.minor,
-                0,
-            );
+            var version = Version(languageVersion.major, languageVersion.minor, 0);
             return _directoryVersions[directory] = version;
         }
 
@@ -157,18 +148,11 @@ final class ConfigCache {
         }
 
         // Cache whichever options we found (or `null` if we didn't find them).
-        return _directoryOptions[directory] = _FormatterOptions(
-            pageWidth,
-            trailingCommas,
-        );
+        return _directoryOptions[directory] = _FormatterOptions(pageWidth, trailingCommas);
     }
 
     /// Look for and cache the nearest package surrounding [file].
-    Future<PackageConfig?> _findPackageConfig(
-        File file,
-        String displayPath, {
-        required bool forLanguageVersion,
-    }) async {
+    Future<PackageConfig?> _findPackageConfig(File file, String displayPath, {required bool forLanguageVersion}) async {
         Profile.begin('look up package config');
         try {
             // Use the cached one (which might be `null`) if we have it.
@@ -179,9 +163,7 @@ final class ConfigCache {
 
             // Otherwise, walk the file system and look for it. If we fail to find it,
             // store `null` so that we don't look again in that same directory.
-            return _directoryConfigs[directory] = await findPackageConfig(
-                file.parent,
-            );
+            return _directoryConfigs[directory] = await findPackageConfig(file.parent);
         } catch (error) {
             // We need a language version, so report an error if we can't find one.
             // We don't need a page width because we happily use the default, so say
@@ -209,11 +191,7 @@ final class ConfigCache {
     /// doesn't contain the package for [packageUri], returns `null`. Otherwise,
     /// returns an absolute file path for where [packageUri] can be found on disk.
     Future<String?> _resolvePackageUri(File file, Uri packageUri) async {
-        var config = await _findPackageConfig(
-            file,
-            file.path,
-            forLanguageVersion: false,
-        );
+        var config = await _findPackageConfig(file, file.path, forLanguageVersion: false);
         if (config == null) return null;
 
         return config.resolve(packageUri)?.toFilePath();

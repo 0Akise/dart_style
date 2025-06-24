@@ -98,8 +98,7 @@ abstract base class Piece with FastHash {
     ///
     /// By default, we assume that any piece not in [State.unsplit] or that has a
     /// hard newline will contain a newline.
-    bool containsNewline(State state) =>
-            state != State.unsplit || containsHardNewline;
+    bool containsNewline(State state) => state != State.unsplit || containsHardNewline;
 
     /// Given that this piece is in [state], use [writer] to produce its formatted
     /// output.

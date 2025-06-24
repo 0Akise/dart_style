@@ -87,10 +87,7 @@ final class ClausePiece extends Piece {
         : _allowLeadingClause = allowLeadingClause && _clauses.length > 1;
 
     @override
-    List<State> get additionalStates => [
-        if (_allowLeadingClause) _betweenClauses,
-        State.split,
-    ];
+    List<State> get additionalStates => [if (_allowLeadingClause) _betweenClauses, State.split];
 
     @override
     Set<Shape> allowedChildShapes(State state, Piece child) {

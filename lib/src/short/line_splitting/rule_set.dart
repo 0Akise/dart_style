@@ -60,12 +60,7 @@ final class RuleSet {
     ///
     /// If an unbound rule gets constrained to `-1` (meaning it must split, but
     /// can split any way it wants), invokes [onSplitRule] with it.
-    bool tryBind(
-        List<Rule> rules,
-        Rule rule,
-        int value,
-        void Function(Rule) onSplitRule,
-    ) {
+    bool tryBind(List<Rule> rules, Rule rule, int value, void Function(Rule) onSplitRule) {
         assert(!rule.isHardened);
 
         _values[rule.index!] = value;
@@ -89,16 +84,14 @@ final class RuleSet {
                     // If we know the rule has to split and there's only one way it can,
                     // just bind that.
                     if (other.numValues == 2) {
-                        if (!tryBind(rules, other, 1, onSplitRule))
-                            return false;
+                        if (!tryBind(rules, other, 1, onSplitRule)) return false;
                     } else {
                         onSplitRule(other);
                     }
                 } else if (constraint != null) {
                     // Bind the other rule to its value and recursively propagate its
                     // constraints.
-                    if (!tryBind(rules, other, constraint, onSplitRule))
-                        return false;
+                    if (!tryBind(rules, other, constraint, onSplitRule)) return false;
                 }
             } else {
                 // It's already bound, so see if the new rule's constraint disallows
@@ -148,8 +141,7 @@ final class SplitSet {
     }
 
     /// Returns `true` if the chunk at [splitIndex] should be split.
-    bool shouldSplitAt(int index) =>
-            index < _columns.length && _columns[index] != -1;
+    bool shouldSplitAt(int index) => index < _columns.length && _columns[index] != -1;
 
     /// Gets the zero-based starting column for the chunk at [index].
     int getColumn(int index) => _columns[index];

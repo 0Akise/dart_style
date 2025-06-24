@@ -49,13 +49,7 @@ final class LineWriter {
             _blockCache = {};
 
     /// Creates a line writer for a block.
-    LineWriter._(
-        this._chunks,
-        this._lineEnding,
-        this.pageWidth,
-        this._blockIndentation,
-        this._blockCache,
-    );
+    LineWriter._(this._chunks, this._lineEnding, this.pageWidth, this._blockIndentation, this._blockCache);
 
     /// Gets the results of formatting the child block of [chunk] at starting
     /// [column].
@@ -79,13 +73,7 @@ final class LineWriter {
         var cached = _blockCache[key];
         if (cached != null) return cached;
 
-        var writer = LineWriter._(
-            chunk.children,
-            _lineEnding,
-            pageWidth,
-            column,
-            _blockCache,
-        );
+        var writer = LineWriter._(chunk.children, _lineEnding, pageWidth, column, _blockCache);
         return _blockCache[key] = writer.writeLines();
     }
 
@@ -115,12 +103,7 @@ final class LineWriter {
         // Be a good citizen, end with a newline.
         if (isCompilationUnit) _buffer.write(_lineEnding);
 
-        return FormatResult(
-            _buffer.toString(),
-            totalCost,
-            _selectionStart,
-            _selectionEnd,
-        );
+        return FormatResult(_buffer.toString(), totalCost, _selectionStart, _selectionEnd);
     }
 
     /// Takes the chunks from [start] to [end], removes them, and runs the

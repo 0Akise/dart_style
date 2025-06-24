@@ -10,18 +10,18 @@ import 'package:test/test.dart';
 import 'utils.dart';
 
 void main() async {
-  await testDirectory('tall/declaration');
-  await testDirectory('tall/expression');
-  await testDirectory('tall/function');
-  await testDirectory('tall/invocation');
-  await testDirectory('tall/other');
-  await testDirectory('tall/pattern');
-  await testDirectory('tall/preserve_trailing_commas');
-  await testDirectory('tall/statement');
-  await testDirectory('tall/top_level');
-  await testDirectory('tall/type');
-  await testDirectory('tall/variable');
-  await testDirectory('tall/regression');
+    await testDirectory('tall/declaration');
+    await testDirectory('tall/expression');
+    await testDirectory('tall/function');
+    await testDirectory('tall/invocation');
+    await testDirectory('tall/other');
+    await testDirectory('tall/pattern');
+    await testDirectory('tall/preserve_trailing_commas');
+    await testDirectory('tall/statement');
+    await testDirectory('tall/top_level');
+    await testDirectory('tall/type');
+    await testDirectory('tall/variable');
+    await testDirectory('tall/regression');
 
-  await testBenchmarks(useTallStyle: true);
+    await testBenchmarks(useTallStyle: true);
 }

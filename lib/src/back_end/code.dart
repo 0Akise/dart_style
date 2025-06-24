@@ -30,9 +30,7 @@ sealed class Code {
         void trace(Code code) {
             switch (code) {
                 case _NewlineCode():
-                    write(
-                        'Newline(blank: ${code._blank}, indent: ${code._indent})',
-                    );
+                    write('Newline(blank: ${code._blank}, indent: ${code._indent})');
 
                 case _TextCode():
                     write('`${code._text}`');
@@ -143,9 +141,7 @@ final class _NewlineCode extends Code {
     /// The number of spaces of indentation after this newline.
     final int _indent;
 
-    _NewlineCode({required bool blank, required int indent})
-        : _indent = indent,
-            _blank = blank;
+    _NewlineCode({required bool blank, required int indent}) : _indent = indent, _blank = blank;
 }
 
 /// A [Code] object for literal source text.
@@ -290,8 +286,7 @@ final class _StringBuilder {
                     // formatted output we've written, pending indentation, and then the
                     // relative offset of the marker into the subsequent [Code] we will
                     // write.
-                    var absolutePosition =
-                            _buffer.length + _indent + code._offset;
+                    var absolutePosition = _buffer.length + _indent + code._offset;
                     switch (code._marker) {
                         case _Marker.start:
                             _selectionStart = absolutePosition;
@@ -329,23 +324,16 @@ final class _StringBuilder {
                         case _Marker.start:
                             // Calculate how far into the unformatted code where the marker
                             // should appear.
-                            var markerOffsetInUnformatted =
-                                    _source.selectionStart! -
-                                    _disableFormattingStart;
-                            _selectionStart =
-                                    _buffer.length + markerOffsetInUnformatted;
+                            var markerOffsetInUnformatted = _source.selectionStart! - _disableFormattingStart;
+                            _selectionStart = _buffer.length + markerOffsetInUnformatted;
 
                         case _Marker.end:
-                            var end =
-                                    _source.selectionStart! +
-                                    _source.selectionLength!;
+                            var end = _source.selectionStart! + _source.selectionLength!;
 
                             // Calculate how far into the unformatted code where the marker
                             // should appear.
-                            var markerOffsetInUnformatted =
-                                    end - _disableFormattingStart;
-                            _selectionEnd =
-                                    _buffer.length + markerOffsetInUnformatted;
+                            var markerOffsetInUnformatted = end - _disableFormattingStart;
+                            _selectionEnd = _buffer.length + markerOffsetInUnformatted;
                     }
                 }
 
@@ -362,12 +350,7 @@ final class _StringBuilder {
                 if (_disableFormattingStart != -1) {
                     // Write all of the unformatted text from the `// dart format off`
                     // comment to the end of the `// dart format on` comment.
-                    _buffer.write(
-                        _source.text.substring(
-                            _disableFormattingStart,
-                            code._sourceOffset,
-                        ),
-                    );
+                    _buffer.write(_source.text.substring(_disableFormattingStart, code._sourceOffset));
                     _disableFormattingStart = -1;
                 }
         }

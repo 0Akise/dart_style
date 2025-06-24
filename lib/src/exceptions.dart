@@ -17,9 +17,7 @@ final class FormatterException implements Exception {
     /// Creates a human-friendly representation of the analysis errors.
     String message({bool? color}) {
         var buffer = StringBuffer();
-        buffer.writeln(
-            'Could not format because the source could not be parsed:',
-        );
+        buffer.writeln('Could not format because the source could not be parsed:');
 
         // In case we get a huge series of cascaded errors, just show the first few.
         var shownErrors = errors;
@@ -35,10 +33,7 @@ final class FormatterException implements Exception {
                 source += ' ' * (error.offset + error.length - source.length);
             }
 
-            var file = SourceFile.fromString(
-                source,
-                url: error.source.fullName,
-            );
+            var file = SourceFile.fromString(source, url: error.source.fullName);
             var span = file.span(error.offset, error.offset + error.length);
             if (buffer.isNotEmpty) buffer.writeln();
             buffer.write(span.message(error.message, color: color));
@@ -46,9 +41,7 @@ final class FormatterException implements Exception {
 
         if (shownErrors.length != errors.length) {
             buffer.writeln();
-            buffer.write(
-                '(${errors.length - shownErrors.length} more errors...)',
-            );
+            buffer.write('(${errors.length - shownErrors.length} more errors...)');
         }
 
         return buffer.toString();

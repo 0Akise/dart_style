@@ -43,9 +43,7 @@ final class ArgumentListVisitor {
     final ArgumentSublist? _argumentsAfterFunctions;
 
     /// Returns `true` if there is only a single positional argument.
-    bool get _isSingle =>
-            _allArguments.length == 1 &&
-            _allArguments.single is! NamedExpression;
+    bool get _isSingle => _allArguments.length == 1 && _allArguments.single is! NamedExpression;
 
     /// Whether this argument list has any arguments that should be formatted as
     /// blocks.
@@ -53,16 +51,10 @@ final class ArgumentListVisitor {
     // forces a method chain to break into two but the result collection may not
     // actually split which can lead to a method chain that's allowed to break
     // where it shouldn't.
-    bool get hasBlockArguments =>
-            _arguments._blocks.isNotEmpty || _functions != null;
+    bool get hasBlockArguments => _arguments._blocks.isNotEmpty || _functions != null;
 
     factory ArgumentListVisitor(SourceVisitor visitor, ArgumentList node) {
-        return ArgumentListVisitor.forArguments(
-            visitor,
-            node.leftParenthesis,
-            node.rightParenthesis,
-            node.arguments,
-        );
+        return ArgumentListVisitor.forArguments(visitor, node.leftParenthesis, node.rightParenthesis, node.arguments);
     }
 
     factory ArgumentListVisitor.forArguments(
@@ -205,8 +197,7 @@ final class ArgumentListVisitor {
         //       something();
         //     },
         //         another: argument);
-        if (_isAllNamed(arguments) &&
-                (functionsStart > 0 || functionsEnd < arguments.length)) {
+        if (_isAllNamed(arguments) && (functionsStart > 0 || functionsEnd < arguments.length)) {
             return null;
         }
 
@@ -220,8 +211,7 @@ final class ArgumentListVisitor {
                 if (expression is! NamedExpression) return false;
                 expression = expression.expression;
 
-                return expression is FunctionExpression &&
-                        expression.body is ExpressionFunctionBody;
+                return expression is FunctionExpression && expression.body is ExpressionFunctionBody;
             }
 
             for (var i = 0; i < functionsStart; i++) {
@@ -237,8 +227,7 @@ final class ArgumentListVisitor {
     }
 
     /// Returns `true` if every expression in [arguments] is named.
-    static bool _isAllNamed(List<Expression> arguments) =>
-            arguments.every((argument) => argument is NamedExpression);
+    static bool _isAllNamed(List<Expression> arguments) => arguments.every((argument) => argument is NamedExpression);
 
     /// Returns `true` if [expression] is a [FunctionExpression] with a non-empty
     /// block body.
@@ -279,8 +268,7 @@ final class ArgumentListVisitor {
 
         // That isn't empty.
         var body = expression.body as BlockFunctionBody;
-        return body.block.statements.isNotEmpty ||
-                body.block.rightBracket.precedingComments != null;
+        return body.block.statements.isNotEmpty || body.block.rightBracket.precedingComments != null;
     }
 
     /// Returns `true` if [expression] is a valid method invocation target for
@@ -344,10 +332,7 @@ final class ArgumentSublist {
     Chunk? get previousSplit => _previousSplit;
     Chunk? _previousSplit;
 
-    factory ArgumentSublist(
-        List<Expression> allArguments,
-        List<Expression> arguments,
-    ) {
+    factory ArgumentSublist(List<Expression> allArguments, List<Expression> arguments) {
         var argumentLists = _splitArgumentLists(arguments);
         var positional = argumentLists[0];
         var named = argumentLists[1];
@@ -382,14 +367,7 @@ final class ArgumentSublist {
         // Ignore any blocks in the middle of the argument list.
         if (leadingBlocks == 0 && trailingBlocks == 0) blocks.clear();
 
-        return ArgumentSublist._(
-            allArguments,
-            positional,
-            named,
-            blocks,
-            leadingBlocks,
-            trailingBlocks,
-        );
+        return ArgumentSublist._(allArguments, positional, named, blocks, leadingBlocks, trailingBlocks);
     }
 
     ArgumentSublist._(
@@ -446,17 +424,11 @@ final class ArgumentSublist {
         _visitArguments(visitor, _named, namedRule);
     }
 
-    void _visitArguments(
-        SourceVisitor visitor,
-        List<Expression> arguments,
-        ArgumentRule rule,
-    ) {
+    void _visitArguments(SourceVisitor visitor, List<Expression> arguments, ArgumentRule rule) {
         visitor.builder.startRule(rule);
 
         // Split before the first argument.
-        _previousSplit = visitor.builder.split(
-            space: arguments.first != _allArguments.first,
-        );
+        _previousSplit = visitor.builder.split(space: arguments.first != _allArguments.first);
         rule.beforeArgument(_previousSplit);
 
         // Try to not split the positional arguments.
@@ -479,11 +451,7 @@ final class ArgumentSublist {
         visitor.builder.endRule();
     }
 
-    void _visitArgument(
-        SourceVisitor visitor,
-        ArgumentRule rule,
-        Expression argument,
-    ) {
+    void _visitArgument(SourceVisitor visitor, ArgumentRule rule, Expression argument) {
         // If we're about to write a block argument, handle it specially.
         var argumentBlock = _blocks[argument];
         if (argumentBlock != null) {
@@ -491,8 +459,7 @@ final class ArgumentSublist {
 
             // Tell it to use the rule we've already created.
             visitor.beforeBlock(argumentBlock, blockRule, previousSplit);
-        } else if (_allArguments.length > 1 ||
-                _allArguments.first is RecordLiteral) {
+        } else if (_allArguments.length > 1 || _allArguments.first is RecordLiteral) {
             // Edge case: Only bump the nesting if there are multiple arguments. This
             // lets us avoid spurious indentation in cases like:
             //
@@ -526,8 +493,7 @@ final class ArgumentSublist {
 
         if (argumentBlock != null) {
             rule.enableSplitOnInnerRules();
-        } else if (_allArguments.length > 1 ||
-                _allArguments.first is RecordLiteral) {
+        } else if (_allArguments.length > 1 || _allArguments.first is RecordLiteral) {
             visitor.builder.endBlockArgumentNesting();
         } else if (argument is! NamedExpression) {
             rule.enableSplitOnInnerRules();
@@ -547,9 +513,7 @@ final class ArgumentSublist {
     /// output.
     ///
     /// Returns a list of two lists: the positional arguments then the named ones.
-    static List<List<Expression>> _splitArgumentLists(
-        List<Expression> arguments,
-    ) {
+    static List<List<Expression>> _splitArgumentLists(List<Expression> arguments) {
         var positional = <Expression>[];
         var named = <Expression>[];
         var inNamed = false;

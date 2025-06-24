@@ -38,12 +38,7 @@ sealed class TextPiece extends Piece {
     /// If [selectionStart] and/or [selectionEnd] are given, then notes that the
     /// corresponding selection markers appear that many code units from where
     /// [text] will be appended.
-    void append(
-        String text, {
-        bool multiline = false,
-        int? selectionStart,
-        int? selectionEnd,
-    }) {
+    void append(String text, {bool multiline = false, int? selectionStart, int? selectionEnd}) {
         if (selectionStart != null) {
             _selectionStart = _adjustSelection(selectionStart);
         }
@@ -177,9 +172,7 @@ final class CommentPiece extends TextPiece {
     }
 
     @override
-    bool calculateContainsHardNewline() =>
-            _trailingWhitespace.hasNewline ||
-            super.calculateContainsHardNewline();
+    bool calculateContainsHardNewline() => _trailingWhitespace.hasNewline || super.calculateContainsHardNewline();
 
     @override
     void forEachChild(void Function(Piece piece) callback) {}
@@ -200,11 +193,8 @@ final class EnableFormattingCommentPiece extends CommentPiece {
     /// before `//`.
     final int _sourceOffset;
 
-    EnableFormattingCommentPiece(
-        this._sourceOffset,
-        super._trailingWhitespace, {
-        required bool enable,
-    }) : _enabled = enable;
+    EnableFormattingCommentPiece(this._sourceOffset, super._trailingWhitespace, {required bool enable})
+        : _enabled = enable;
 
     @override
     void format(CodeWriter writer, State state) {

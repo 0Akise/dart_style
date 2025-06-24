@@ -55,11 +55,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     NodeContext _parentContext = NodeContext.none;
 
     /// Create a new visitor that will be called to visit the code in [source].
-    factory AstNodeVisitor(
-        DartFormatter formatter,
-        LineInfo lineInfo,
-        SourceCode source,
-    ) {
+    factory AstNodeVisitor(DartFormatter formatter, LineInfo lineInfo, SourceCode source) {
         var comments = CommentWriter(lineInfo);
         var pieces = PieceWriter(formatter, source, comments);
         return AstNodeVisitor._(formatter, pieces, comments);
@@ -79,11 +75,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     ///
     /// If there is a `// dart format width=123` comment before the formatted
     /// code, then [pageWidthFromComment] is that width.
-    SourceCode run(
-        SourceCode source,
-        AstNode node, [
-        int? pageWidthFromComment,
-    ]) {
+    SourceCode run(SourceCode source, AstNode node, [int? pageWidthFromComment]) {
         Profile.begin('AstNodeVisitor.run()');
 
         Profile.begin('AstNodeVisitor build Piece tree');
@@ -244,11 +236,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             node,
             precedence: node.operator.type.precedence,
             indent: indent,
-            (expression) => (
-                expression.leftOperand,
-                expression.operator,
-                expression.rightOperand,
-            ),
+            (expression) => (expression.leftOperand, expression.operator, expression.rightOperand),
         );
     }
 
@@ -315,11 +303,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             nativeClause: node.nativeClause,
             body: () {
                 return pieces.build(() {
-                    writeBody(
-                        node.leftBracket,
-                        node.members,
-                        node.rightBracket,
-                    );
+                    writeBody(node.leftBracket, node.members, node.rightBracket);
                 });
             },
         );
@@ -361,9 +345,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitCompilationUnit(CompilationUnit node) {
-        throw UnsupportedError(
-            'CompilationUnit should be handled directly by run().',
-        );
+        throw UnsupportedError('CompilationUnit should be handled directly by run().');
     }
 
     @override
@@ -394,10 +376,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                 pieces.build(() {
                     pieces.token(operator);
                     pieces.space();
-                    pieces.visit(
-                        operand,
-                        context: NodeContext.conditionalBranch,
-                    );
+                    pieces.visit(operand, context: NodeContext.conditionalBranch);
                 }),
             );
         }
@@ -514,11 +493,8 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                     header,
                     parameters,
                     body,
-                    canSplitParameters: node.parameters.parameters.canSplit(
-                        node.parameters.rightParenthesis,
-                    ),
-                    hasOptionalParameter:
-                            node.parameters.rightDelimiter != null,
+                    canSplitParameters: node.parameters.parameters.canSplit(node.parameters.rightParenthesis),
+                    hasOptionalParameter: node.parameters.rightDelimiter != null,
                     redirect: redirect,
                     initializerSeparator: initializerSeparator,
                     initializers: initializers,
@@ -567,12 +543,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitDeclaredIdentifier(DeclaredIdentifier node) {
-        writeParameter(
-            metadata: node.metadata,
-            modifiers: [node.keyword],
-            node.type,
-            node.name,
-        );
+        writeParameter(metadata: node.metadata, modifiers: [node.keyword], node.type, node.name);
     }
 
     @override
@@ -635,29 +606,17 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             typeParameters: node.typeParameters,
             withClause: node.withClause,
             implementsClause: node.implementsClause,
-            bodyType: node.members.isEmpty
-                    ? TypeBodyType.list
-                    : TypeBodyType.block,
+            bodyType: node.members.isEmpty ? TypeBodyType.list : TypeBodyType.block,
             body: () {
                 if (node.members.isEmpty) {
                     // If there are no members, format the constants like a list. This
                     // keeps the enum declaration on one line if it fits.
-                    var builder = DelimitedListBuilder(
-                        this,
-                        const ListStyle(spaceWhenUnsplit: true),
-                    );
+                    var builder = DelimitedListBuilder(this, const ListStyle(spaceWhenUnsplit: true));
 
                     builder.leftBracket(node.leftBracket);
                     node.constants.forEach(builder.visit);
-                    builder.rightBracket(
-                        semicolon: node.semicolon,
-                        node.rightBracket,
-                    );
-                    return builder.build(
-                        forceSplit: hasPreservedTrailingComma(
-                            node.semicolon ?? node.rightBracket,
-                        ),
-                    );
+                    builder.rightBracket(semicolon: node.semicolon, node.rightBracket);
+                    return builder.build(forceSplit: hasPreservedTrailingComma(node.semicolon ?? node.rightBracket));
                 } else {
                     // If there are members, format it like a block where each constant
                     // and member is on its own line.
@@ -665,9 +624,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                     builder.leftBracket(node.leftBracket);
 
                     for (var constant in node.constants) {
-                        builder.addCommentsBefore(
-                            constant.firstNonCommentToken,
-                        );
+                        builder.addCommentsBefore(constant.firstNonCommentToken);
                         builder.add(
                             createEnumConstant(
                                 constant,
@@ -708,10 +665,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             pieces.token(node.functionDefinition);
         });
 
-        var expression = nodePiece(
-            node.expression,
-            context: NodeContext.assignment,
-        );
+        var expression = nodePiece(node.expression, context: NodeContext.assignment);
 
         if (isVersion37) {
             pieces.add(
@@ -719,9 +673,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                     operatorPiece,
                     expression,
                     canBlockSplitRight: node.expression.canBlockSplit,
-                    avoidBlockSplitRight:
-                            node.expression.blockFormatType ==
-                            BlockFormat.invocation,
+                    avoidBlockSplitRight: node.expression.blockFormatType == BlockFormat.invocation,
                 ),
             );
         } else {
@@ -741,9 +693,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             // single piece similar to how we handle nested conditional expressions.
             // In practice, outside of a few libraries that lean heavily on currying,
             // this is very rare.
-            if (node.expression case FunctionExpression(
-                body: ExpressionFunctionBody(),
-            )) {
+            if (node.expression case FunctionExpression(body: ExpressionFunctionBody())) {
                 assignPiece.pin(State.split);
             }
 
@@ -761,9 +711,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitExtendsClause(ExtendsClause node) {
-        throw UnsupportedError(
-            'This node is handled by PieceFactory.createType().',
-        );
+        throw UnsupportedError('This node is handled by PieceFactory.createType().');
     }
 
     @override
@@ -781,11 +729,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             onType: onType,
             body: () {
                 return pieces.build(() {
-                    writeBody(
-                        node.leftBracket,
-                        node.members,
-                        node.rightBracket,
-                    );
+                    writeBody(node.leftBracket, node.members, node.rightBracket);
                 });
             },
         );
@@ -795,22 +739,14 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     void visitExtensionTypeDeclaration(ExtensionTypeDeclaration node) {
         writeType(
             node.metadata,
-            [
-                node.extensionKeyword,
-                node.typeKeyword,
-                if (node.constKeyword case var keyword?) keyword,
-            ],
+            [node.extensionKeyword, node.typeKeyword, if (node.constKeyword case var keyword?) keyword],
             node.name,
             typeParameters: node.typeParameters,
             representation: node.representation,
             implementsClause: node.implementsClause,
             body: () {
                 return pieces.build(() {
-                    writeBody(
-                        node.leftBracket,
-                        node.members,
-                        node.rightBracket,
-                    );
+                    writeBody(node.leftBracket, node.members, node.rightBracket);
                 });
             },
         );
@@ -859,9 +795,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     @override
     void visitFormalParameterList(FormalParameterList node) {
         // Find the first non-mandatory parameter (if there are any).
-        var firstOptional = node.parameters.indexWhere(
-            (p) => p is DefaultFormalParameter,
-        );
+        var firstOptional = node.parameters.indexWhere((p) => p is DefaultFormalParameter);
 
         // If the parameter list is completely empty, write the brackets inline so
         // that we generate fewer separate pieces.
@@ -892,15 +826,10 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             builder.visit(node.parameters[i]);
         }
 
-        builder.rightBracket(
-            node.rightParenthesis,
-            delimiter: node.rightDelimiter,
-        );
+        builder.rightBracket(node.rightParenthesis, delimiter: node.rightDelimiter);
         pieces.add(
             builder.build(
-                forceSplit: hasPreservedTrailingComma(
-                    node.rightDelimiter ?? node.rightParenthesis,
-                ),
+                forceSplit: hasPreservedTrailingComma(node.rightDelimiter ?? node.rightParenthesis),
                 blockShaped: false,
             ),
         );
@@ -984,11 +913,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitFunctionExpression(FunctionExpression node) {
-        writeFunction(
-            typeParameters: node.typeParameters,
-            parameters: node.parameters,
-            body: node.body,
-        );
+        writeFunction(typeParameters: node.typeParameters, parameters: node.parameters, body: node.body);
     }
 
     @override
@@ -1031,13 +956,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitGenericFunctionType(GenericFunctionType node) {
-        writeFunctionType(
-            node.returnType,
-            node.functionKeyword,
-            node.typeParameters,
-            node.parameters,
-            node.question,
-        );
+        writeFunctionType(node.returnType, node.functionKeyword, node.typeParameters, node.parameters, node.question);
     }
 
     @override
@@ -1049,16 +968,9 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             pieces.visit(node.typeParameters);
             pieces.space();
             if (isVersion37) {
-                pieces.add(
-                    AssignPieceV37(
-                        tokenPiece(node.equals),
-                        nodePiece(node.type),
-                    ),
-                );
+                pieces.add(AssignPieceV37(tokenPiece(node.equals), nodePiece(node.type)));
             } else {
-                pieces.add(
-                    AssignPiece(tokenPiece(node.equals), nodePiece(node.type)),
-                );
+                pieces.add(AssignPiece(tokenPiece(node.equals), nodePiece(node.type)));
             }
             pieces.token(node.semicolon);
         });
@@ -1184,18 +1096,13 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             //       body;
             //     }
             var thenStatement = switch (ifStatement.thenStatement) {
-                Block thenBlock when ifStatement.elseStatement != null =>
-                    pieces.build(() {
-                        writeBlock(thenBlock, forceSplit: true);
-                    }),
+                Block thenBlock when ifStatement.elseStatement != null => pieces.build(() {
+                    writeBlock(thenBlock, forceSplit: true);
+                }),
                 _ => nodePiece(ifStatement.thenStatement),
             };
 
-            piece.add(
-                condition,
-                thenStatement,
-                isBlock: ifStatement.thenStatement is Block,
-            );
+            piece.add(condition, thenStatement, isBlock: ifStatement.thenStatement is Block);
 
             switch (ifStatement.elseStatement) {
                 case IfStatement elseIf:
@@ -1210,11 +1117,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                         pieces.token(ifStatement.elseKeyword, spaceAfter: true);
                     });
                     var statement = nodePiece(elseStatement);
-                    piece.add(
-                        header,
-                        statement,
-                        isBlock: elseStatement is Block,
-                    );
+                    piece.add(header, statement, isBlock: elseStatement is Block);
             }
         }
 
@@ -1234,9 +1137,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitImplementsClause(ImplementsClause node) {
-        throw UnsupportedError(
-            'This node is handled by PieceFactory.createType().',
-        );
+        throw UnsupportedError('This node is handled by PieceFactory.createType().');
     }
 
     @override
@@ -1398,12 +1299,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitListPattern(ListPattern node) {
-        writeCollection(
-            typeArguments: node.typeArguments,
-            node.leftBracket,
-            node.elements,
-            node.rightBracket,
-        );
+        writeCollection(typeArguments: node.typeArguments, node.leftBracket, node.elements, node.rightBracket);
     }
 
     @override
@@ -1425,11 +1321,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             node,
             precedence: node.operator.type.precedence,
             indent: indent,
-            (expression) => (
-                expression.leftOperand,
-                expression.operator,
-                expression.rightOperand,
-            ),
+            (expression) => (expression.leftOperand, expression.operator, expression.rightOperand),
         );
     }
 
@@ -1460,11 +1352,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             node,
             precedence: node.operator.type.precedence,
             indent: indent,
-            (expression) => (
-                expression.leftOperand,
-                expression.operator,
-                expression.rightOperand,
-            ),
+            (expression) => (expression.leftOperand, expression.operator, expression.rightOperand),
         );
     }
 
@@ -1490,12 +1378,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitMapPattern(MapPattern node) {
-        writeCollection(
-            typeArguments: node.typeArguments,
-            node.leftBracket,
-            node.elements,
-            node.rightBracket,
-        );
+        writeCollection(typeArguments: node.typeArguments, node.leftBracket, node.elements, node.rightBracket);
     }
 
     @override
@@ -1548,11 +1431,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
             implementsClause: node.implementsClause,
             body: () {
                 return pieces.build(() {
-                    writeBody(
-                        node.leftBracket,
-                        node.members,
-                        node.rightBracket,
-                    );
+                    writeBody(node.leftBracket, node.members, node.rightBracket);
                 });
             },
         );
@@ -1560,9 +1439,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitMixinOnClause(MixinOnClause node) {
-        throw UnsupportedError(
-            'This node is handled by PieceFactory.createType().',
-        );
+        throw UnsupportedError('This node is handled by PieceFactory.createType().');
     }
 
     @override
@@ -1640,29 +1517,17 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
         node.fields.forEach(builder.visit);
         builder.rightBracket(node.rightParenthesis);
-        pieces.add(
-            builder.build(
-                forceSplit: hasPreservedTrailingComma(node.rightParenthesis),
-            ),
-        );
+        pieces.add(builder.build(forceSplit: hasPreservedTrailingComma(node.rightParenthesis)));
     }
 
     @override
     void visitParenthesizedExpression(ParenthesizedExpression node) {
-        writeParenthesized(
-            node.leftParenthesis,
-            node.expression,
-            node.rightParenthesis,
-        );
+        writeParenthesized(node.leftParenthesis, node.expression, node.rightParenthesis);
     }
 
     @override
     void visitParenthesizedPattern(ParenthesizedPattern node) {
-        writeParenthesized(
-            node.leftParenthesis,
-            node.pattern,
-            node.rightParenthesis,
-        );
+        writeParenthesized(node.leftParenthesis, node.pattern, node.rightParenthesis);
     }
 
     @override
@@ -1727,9 +1592,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     }
 
     @override
-    void visitPatternVariableDeclarationStatement(
-        PatternVariableDeclarationStatement node,
-    ) {
+    void visitPatternVariableDeclarationStatement(PatternVariableDeclarationStatement node) {
         pieces.visit(node.declaration);
         pieces.token(node.semicolon);
     }
@@ -1749,11 +1612,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
         // Edge case: If we have two adjacent `-` or `--` operators, insert a space
         // between them so that we don't inadvertently collapse `- -` into `--`.
         var space = switch ((node.operator, node.operand)) {
-            (
-                Token(lexeme: '-' || '--'),
-                PrefixExpression(operator: Token(lexeme: '-' || '--')),
-            ) =>
-                true,
+            (Token(lexeme: '-' || '--'), PrefixExpression(operator: Token(lexeme: '-' || '--'))) => true,
             _ => false,
         };
 
@@ -1773,9 +1632,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     }
 
     @override
-    void visitRedirectingConstructorInvocation(
-        RedirectingConstructorInvocation node,
-    ) {
+    void visitRedirectingConstructorInvocation(RedirectingConstructorInvocation node) {
         pieces.token(node.thisKeyword);
         pieces.token(node.period);
         pieces.visit(node.constructorName);
@@ -1804,9 +1661,10 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
         var positionalFields = node.positionalFields;
 
         // Single positional record types always have a trailing comma.
-        var listStyle = positionalFields.length == 1 && namedFields == null
-                ? const ListStyle(commas: Commas.alwaysTrailing)
-                : const ListStyle(commas: Commas.trailing);
+        var listStyle =
+                positionalFields.length == 1 && namedFields == null
+                        ? const ListStyle(commas: Commas.alwaysTrailing)
+                        : const ListStyle(commas: Commas.trailing);
         var builder = DelimitedListBuilder(this, listStyle);
 
         // If all parameters are optional, put the `{` right after `(`.
@@ -1842,16 +1700,12 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     }
 
     @override
-    void visitRecordTypeAnnotationNamedField(
-        RecordTypeAnnotationNamedField node,
-    ) {
+    void visitRecordTypeAnnotationNamedField(RecordTypeAnnotationNamedField node) {
         writeRecordTypeField(node);
     }
 
     @override
-    void visitRecordTypeAnnotationPositionalField(
-        RecordTypeAnnotationPositionalField node,
-    ) {
+    void visitRecordTypeAnnotationPositionalField(RecordTypeAnnotationPositionalField node) {
         writeRecordTypeField(node);
     }
 
@@ -1863,9 +1717,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     }
 
     @override
-    void visitRepresentationConstructorName(
-        RepresentationConstructorName node,
-    ) {
+    void visitRepresentationConstructorName(RepresentationConstructorName node) {
         pieces.token(node.period);
         pieces.token(node.name);
     }
@@ -1874,18 +1726,11 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     void visitRepresentationDeclaration(RepresentationDeclaration node) {
         pieces.visit(node.constructorName);
 
-        var builder = DelimitedListBuilder(
-            this,
-            const ListStyle(commas: Commas.nonTrailing),
-        );
+        var builder = DelimitedListBuilder(this, const ListStyle(commas: Commas.nonTrailing));
         builder.leftBracket(node.leftParenthesis);
         builder.add(
             pieces.build(() {
-                writeParameter(
-                    metadata: node.fieldMetadata,
-                    node.fieldType,
-                    node.fieldName,
-                );
+                writeParameter(metadata: node.fieldMetadata, node.fieldType, node.fieldName);
             }),
         );
         builder.rightBracket(node.rightParenthesis);
@@ -1934,12 +1779,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitSimpleFormalParameter(SimpleFormalParameter node) {
-        writeFormalParameter(
-            node,
-            node.type,
-            node.name,
-            mutableKeyword: node.keyword,
-        );
+        writeFormalParameter(node, node.type, node.name, mutableKeyword: node.keyword);
     }
 
     @override
@@ -1966,9 +1806,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
         for (var element in node.elements) {
             pieces.visit(
                 element,
-                context: node.isMultiline
-                        ? NodeContext.multilineStringInterpolation
-                        : NodeContext.none,
+                context: node.isMultiline ? NodeContext.multilineStringInterpolation : NodeContext.none,
             );
         }
     }
@@ -2016,19 +1854,11 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitSwitchExpression(SwitchExpression node) {
-        var list = DelimitedListBuilder(
-            this,
-            const ListStyle(spaceWhenUnsplit: true),
-        );
+        var list = DelimitedListBuilder(this, const ListStyle(spaceWhenUnsplit: true));
 
         list.addLeftBracket(
             pieces.build(() {
-                writeControlFlowStart(
-                    node.switchKeyword,
-                    node.leftParenthesis,
-                    node.expression,
-                    node.rightParenthesis,
-                );
+                writeControlFlowStart(node.switchKeyword, node.leftParenthesis, node.expression, node.rightParenthesis);
                 pieces.space();
                 pieces.token(node.leftBracket);
             }),
@@ -2044,10 +1874,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitSwitchExpressionCase(SwitchExpressionCase node) {
-        var patternPiece = nodePiece(
-            node.guardedPattern.pattern,
-            context: NodeContext.switchExpressionCase,
-        );
+        var patternPiece = nodePiece(node.guardedPattern.pattern, context: NodeContext.switchExpressionCase);
 
         var guardPiece = optionalNodePiece(node.guardedPattern.whenClause);
         var arrowPiece = tokenPiece(node.arrow);
@@ -2060,22 +1887,15 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                 arrowPiece,
                 bodyPiece,
                 canBlockSplitPattern: node.guardedPattern.pattern.canBlockSplit,
-                patternIsLogicalOr:
-                        node.guardedPattern.pattern is LogicalOrPattern,
-                canBlockSplitBody:
-                        !isVersion37 || node.expression.canBlockSplit,
+                patternIsLogicalOr: node.guardedPattern.pattern is LogicalOrPattern,
+                canBlockSplitBody: !isVersion37 || node.expression.canBlockSplit,
             ),
         );
     }
 
     @override
     void visitSwitchStatement(SwitchStatement node) {
-        writeControlFlowStart(
-            node.switchKeyword,
-            node.leftParenthesis,
-            node.expression,
-            node.rightParenthesis,
-        );
+        writeControlFlowStart(node.switchKeyword, node.leftParenthesis, node.expression, node.rightParenthesis);
         pieces.space();
 
         var sequence = SequenceBuilder(this);
@@ -2098,18 +1918,10 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                     case SwitchPatternCase():
                         pieces.space();
 
-                        var patternPiece = nodePiece(
-                            member.guardedPattern.pattern,
-                        );
+                        var patternPiece = nodePiece(member.guardedPattern.pattern);
 
-                        if (member.guardedPattern.whenClause
-                                case var whenClause?) {
-                            pieces.add(
-                                InfixPiece([
-                                    patternPiece,
-                                    nodePiece(whenClause),
-                                ], version37: isVersion37),
-                            );
+                        if (member.guardedPattern.whenClause case var whenClause?) {
+                            pieces.add(InfixPiece([patternPiece, nodePiece(whenClause)], version37: isVersion37));
                         } else {
                             pieces.add(patternPiece);
                         }
@@ -2123,11 +1935,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
             // Don't allow any blank lines between the `case` line and the first
             // statement in the case (or the next case if this case has no body).
-            sequence.add(
-                casePiece,
-                indent: Indent.none,
-                allowBlankAfter: false,
-            );
+            sequence.add(casePiece, indent: Indent.none, allowBlankAfter: false);
 
             for (var statement in member.statements) {
                 sequence.visit(statement, indent: Indent.block);
@@ -2195,9 +2003,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                     pieces.visit(bound);
                 });
 
-                pieces.add(
-                    TypeParameterBoundPiece(typeParameterPiece, boundPiece),
-                );
+                pieces.add(TypeParameterBoundPiece(typeParameterPiece, boundPiece));
             } else {
                 // No bound.
                 pieces.token(node.name);
@@ -2212,9 +2018,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitVariableDeclaration(VariableDeclaration node) {
-        throw UnsupportedError(
-            'This is handled by visitVariableDeclarationList()',
-        );
+        throw UnsupportedError('This is handled by visitVariableDeclarationList()');
     }
 
     @override
@@ -2236,10 +2040,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                 var variables = <Piece>[];
 
                 for (var variable in node.variables) {
-                    if ((variable.equals, variable.initializer) case (
-                        var equals?,
-                        var initializer?,
-                    )) {
+                    if ((variable.equals, variable.initializer) case (var equals?, var initializer?)) {
                         if (isVersion37) {
                             var variablePiece = tokenPiece(variable.name);
 
@@ -2259,8 +2060,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                                     left: variablePiece,
                                     equalsPiece,
                                     initializerPiece,
-                                    canBlockSplitRight:
-                                            initializer.canBlockSplit,
+                                    canBlockSplitRight: initializer.canBlockSplit,
                                 ),
                             );
                         } else {
@@ -2270,30 +2070,16 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                                 pieces.token(equals);
                             });
 
-                            var initializerPiece = nodePiece(
-                                initializer,
-                                commaAfter: true,
-                            );
+                            var initializerPiece = nodePiece(initializer, commaAfter: true);
 
-                            variables.add(
-                                AssignPiece(variablePiece, initializerPiece),
-                            );
+                            variables.add(AssignPiece(variablePiece, initializerPiece));
                         }
                     } else {
-                        variables.add(
-                            tokenPiece(variable.name, commaAfter: true),
-                        );
+                        variables.add(tokenPiece(variable.name, commaAfter: true));
                     }
                 }
 
-                pieces.add(
-                    VariablePiece(
-                        header,
-                        variables,
-                        hasType: node.type != null,
-                        version37: isVersion37,
-                    ),
-                );
+                pieces.add(VariablePiece(header, variables, hasType: node.type != null, version37: isVersion37));
             },
         );
     }
@@ -2312,12 +2098,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     @override
     void visitWhileStatement(WhileStatement node) {
         var condition = pieces.build(() {
-            writeControlFlowStart(
-                node.whileKeyword,
-                node.leftParenthesis,
-                node.condition,
-                node.rightParenthesis,
-            );
+            writeControlFlowStart(node.whileKeyword, node.leftParenthesis, node.condition, node.rightParenthesis);
             pieces.space();
         });
 
@@ -2335,9 +2116,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
     @override
     void visitWithClause(WithClause node) {
-        throw UnsupportedError(
-            'This node is handled by PieceFactory.createType().',
-        );
+        throw UnsupportedError('This node is handled by PieceFactory.createType().');
     }
 
     @override
@@ -2388,8 +2167,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
             // Check again because the preceding comments may not necessarily end up
             // as leading comments.
-            if (comments.isNotEmpty)
-                piece = LeadingCommentPiece(comments, piece);
+            if (comments.isNotEmpty) piece = LeadingCommentPiece(comments, piece);
 
             pieces.add(piece);
         } else {

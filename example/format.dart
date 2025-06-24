@@ -8,128 +8,119 @@ import 'package:dart_style/src/testing/test_file.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 void main(List<String> args) {
-  // Enable debugging so you can see some of the formatter's internal state.
-  // Normal users do not do this.
-  debug.traceChunkBuilder = true;
-  debug.traceLineWriter = true;
-  debug.traceSplitter = true;
-  debug.useAnsiColors = true;
-  debug.tracePieceBuilder = true;
-  debug.traceSolver = true;
-  debug.traceSolverEnqueing = true;
-  debug.traceSolverDequeing = true;
-  debug.traceSolverShowCode = true;
+    // Enable debugging so you can see some of the formatter's internal state.
+    // Normal users do not do this.
+    debug.traceChunkBuilder = true;
+    debug.traceLineWriter = true;
+    debug.traceSplitter = true;
+    debug.useAnsiColors = true;
+    debug.tracePieceBuilder = true;
+    debug.traceSolver = true;
+    debug.traceSolverEnqueing = true;
+    debug.traceSolverDequeing = true;
+    debug.traceSolverShowCode = true;
 
-  _formatStmt('''
+    _formatStmt('''
   1 + 2;
   ''');
 
-  _formatUnit('''
+    _formatUnit('''
   class C {}
   ''');
 
-  _runTest('other/selection.stmt', 2);
+    _runTest('other/selection.stmt', 2);
 }
 
 void _formatStmt(
-  String source, {
-  Version? version,
-  int pageWidth = 40,
-  TrailingCommas trailingCommas = TrailingCommas.automate,
+    String source, {
+    Version? version,
+    int pageWidth = 40,
+    TrailingCommas trailingCommas = TrailingCommas.automate,
 }) {
-  _runFormatter(
-    source,
-    pageWidth,
-    version: version ?? DartFormatter.latestLanguageVersion,
-    isCompilationUnit: false,
-    trailingCommas: trailingCommas,
-  );
+    _runFormatter(
+        source,
+        pageWidth,
+        version: version ?? DartFormatter.latestLanguageVersion,
+        isCompilationUnit: false,
+        trailingCommas: trailingCommas,
+    );
 }
 
 void _formatUnit(
-  String source, {
-  Version? version,
-  int pageWidth = 40,
-  TrailingCommas trailingCommas = TrailingCommas.automate,
+    String source, {
+    Version? version,
+    int pageWidth = 40,
+    TrailingCommas trailingCommas = TrailingCommas.automate,
 }) {
-  _runFormatter(
-    source,
-    pageWidth,
-    version: version ?? DartFormatter.latestLanguageVersion,
-    isCompilationUnit: true,
-    trailingCommas: trailingCommas,
-  );
+    _runFormatter(
+        source,
+        pageWidth,
+        version: version ?? DartFormatter.latestLanguageVersion,
+        isCompilationUnit: true,
+        trailingCommas: trailingCommas,
+    );
 }
 
 void _runFormatter(
-  String source,
-  int pageWidth, {
-  required Version version,
-  required bool isCompilationUnit,
-  TrailingCommas trailingCommas = TrailingCommas.automate,
+    String source,
+    int pageWidth, {
+    required Version version,
+    required bool isCompilationUnit,
+    TrailingCommas trailingCommas = TrailingCommas.automate,
 }) {
-  try {
-    var formatter = DartFormatter(
-      languageVersion: version,
-      pageWidth: pageWidth,
-      trailingCommas: trailingCommas,
-    );
+    try {
+        var formatter = DartFormatter(languageVersion: version, pageWidth: pageWidth, trailingCommas: trailingCommas);
 
-    String result;
-    if (isCompilationUnit) {
-      result = formatter.format(source);
-    } else {
-      result = formatter.formatStatement(source);
+        String result;
+        if (isCompilationUnit) {
+            result = formatter.format(source);
+        } else {
+            result = formatter.formatStatement(source);
+        }
+
+        _drawRuler('before', pageWidth);
+        print(source);
+        _drawRuler('after', pageWidth);
+        print(result);
+    } on FormatterException catch (error) {
+        print(error.message());
     }
-
-    _drawRuler('before', pageWidth);
-    print(source);
-    _drawRuler('after', pageWidth);
-    print(result);
-  } on FormatterException catch (error) {
-    print(error.message());
-  }
 }
 
 void _drawRuler(String label, int width) {
-  var padding = ' ' * (width - label.length - 1);
-  print('$label:$padding|');
+    var padding = ' ' * (width - label.length - 1);
+    print('$label:$padding|');
 }
 
 /// Runs the formatter test starting on [line] at [path] inside the "test"
 /// directory.
-Future<void> _runTest(
-  String path,
-  int line, {
-  int pageWidth = 40,
-  bool tall = true,
-}) async {
-  var testFile = await TestFile.read('${tall ? 'tall' : 'short'}/$path');
-  var formatTest = testFile.tests.firstWhere((test) => test.line == line);
-  var formatter = testFile.formatterForTest(formatTest);
+Future<void> _runTest(String path, int line, {int pageWidth = 40, bool tall = true}) async {
+    var testFile = await TestFile.read('${tall ? 'tall' : 'short'}/$path');
+    var formatTest = testFile.tests.firstWhere((test) => test.line == line);
+    var formatter = testFile.formatterForTest(formatTest);
 
-  var actual = formatter.formatSource(formatTest.input.code);
+    var actual = formatter.formatSource(formatTest.input.code);
 
-  // The test files always put a newline at the end of the expectation.
-  // Statements from the formatter (correctly) don't have that, so add
-  // one to line up with the expected result.
-  var actualText = actual.textWithSelectionMarkers;
-  if (!testFile.isCompilationUnit) actualText += '\n';
+    // The test files always put a newline at the end of the expectation.
+    // Statements from the formatter (correctly) don't have that, so add
+    // one to line up with the expected result.
+    var actualText = actual.textWithSelectionMarkers;
+    if (!testFile.isCompilationUnit) actualText += '\n';
 
-  // TODO(rnystrom): Handle multiple outputs.
-  var expectedText = formatTest.outputs.first.code.textWithSelectionMarkers;
+    // TODO(rnystrom): Handle multiple outputs.
+    var expectedText = formatTest.outputs.first.code.textWithSelectionMarkers;
 
-  print('$path ${formatTest.input.description}');
-  _drawRuler('before', pageWidth);
-  print(formatTest.input.code.textWithSelectionMarkers);
-  if (actualText == expectedText) {
-    _drawRuler('result', pageWidth);
-    print(actualText);
-  } else {
-    print('FAIL');
-    _drawRuler('expected', pageWidth);
-    print(expectedText);
-    _drawRuler('actual', pageWidth);
-    print(actualText);
-  }
+    print('$path ${formatTest.input.description}');
+    _drawRuler('before', pageWidth);
+    print(formatTest.input.code.textWithSelectionMarkers);
+    if (actualText == expectedText) {
+        _drawRuler('result', pageWidth);
+        print(actualText);
+    } else {
+        print('FAIL');
+        _drawRuler('expected', pageWidth);
+        print(expectedText);
+        _drawRuler('actual', pageWidth);
+        print(actualText);
+    }
 }

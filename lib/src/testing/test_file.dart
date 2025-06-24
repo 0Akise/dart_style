@@ -27,9 +27,8 @@ final _outputPattern = RegExp(r'<<<( (\d+)\.(\d+))?(.*)');
 
 /// Get the absolute local file path to the dart_style package's root directory.
 Future<String> findPackageDirectory() async {
-    var libraryPath = (await Isolate.resolvePackageUri(
-        Uri.parse('package:dart_style/src/testing/test_file.dart'),
-    ))?.toFilePath();
+    var libraryPath =
+            (await Isolate.resolvePackageUri(Uri.parse('package:dart_style/src/testing/test_file.dart')))?.toFilePath();
 
     // Fallback, if we can't resolve the package URI because we're running in an
     // AOT snapshot, just assume we're running from the root directory of the
@@ -50,20 +49,13 @@ final class TestFile {
     /// `test/` directory.
     static Future<List<TestFile>> listDirectory(String name) async {
         var testDir = await findTestDirectory();
-        var entries = Directory(
-            p.join(testDir, name),
-        ).listSync(recursive: true, followLinks: false);
+        var entries = Directory(p.join(testDir, name)).listSync(recursive: true, followLinks: false);
         entries.sort((a, b) => a.path.compareTo(b.path));
 
         return [
             for (var entry in entries)
-                if (entry is File &&
-                        (entry.path.endsWith('.stmt') ||
-                                entry.path.endsWith('.unit')))
-                    TestFile._load(
-                        entry,
-                        p.relative(entry.path, from: testDir),
-                    ),
+                if (entry is File && (entry.path.endsWith('.stmt') || entry.path.endsWith('.unit')))
+                    TestFile._load(entry, p.relative(entry.path, from: testDir)),
         ];
     }
 
@@ -130,12 +122,7 @@ final class TestFile {
                 isCompilationUnit: isCompilationUnit,
             );
 
-            var input = TestEntry(
-                description.trim(),
-                null,
-                inputComments,
-                inputCode,
-            );
+            var input = TestEntry(description.trim(), null, inputComments, inputCode);
 
             var outputs = <TestEntry>[];
             while (i < lines.length && lines[i].startsWith('<<<')) {
@@ -143,19 +130,13 @@ final class TestFile {
                 var outputDescription = match[4]!;
                 Version? outputVersion;
                 if (match[1] != null) {
-                    outputVersion = Version(
-                        int.parse(match[2]!),
-                        int.parse(match[3]!),
-                        0,
-                    );
+                    outputVersion = Version(int.parse(match[2]!), int.parse(match[3]!), 0);
                 }
 
                 var outputComments = readComments();
 
                 var outputBuffer = StringBuffer();
-                while (i < lines.length &&
-                        !lines[i].startsWith('>>>') &&
-                        !lines[i].startsWith('<<<')) {
+                while (i < lines.length && !lines[i].startsWith('>>>') && !lines[i].startsWith('<<<')) {
                     var line = readLine();
                     outputBuffer.writeln(line);
                 }
@@ -169,31 +150,15 @@ final class TestFile {
                     assert(outputText.endsWith('\n'));
                     outputText = outputText.substring(0, outputText.length - 1);
                 }
-                var outputCode = _extractSelection(
-                    _unescapeUnicode(outputText),
-                    isCompilationUnit: isCompilationUnit,
-                );
+                var outputCode = _extractSelection(_unescapeUnicode(outputText), isCompilationUnit: isCompilationUnit);
 
-                outputs.add(
-                    TestEntry(
-                        outputDescription.trim(),
-                        outputVersion,
-                        outputComments,
-                        outputCode,
-                    ),
-                );
+                outputs.add(TestEntry(outputDescription.trim(), outputVersion, outputComments, outputCode));
             }
 
             tests.add(FormatTest(lineNumber, options, input, outputs));
         }
 
-        return TestFile._(
-            relativePath,
-            pageWidth,
-            fileOptions,
-            fileComments,
-            tests,
-        );
+        return TestFile._(relativePath, pageWidth, fileOptions, fileComments, tests);
     }
 
     /// Parses all of the test option syntax like `(indent 3)` from [line].
@@ -226,13 +191,7 @@ final class TestFile {
         return (TestOptions(leadingIndent, trailingCommas, experiments), line);
     }
 
-    TestFile._(
-        this.path,
-        this.pageWidth,
-        this.options,
-        this.comments,
-        this.tests,
-    );
+    TestFile._(this.path, this.pageWidth, this.options, this.comments, this.tests);
 
     /// The path to the test file, relative to the `test/` directory.
     final String path;
@@ -262,22 +221,15 @@ final class TestFile {
     /// If [version] is given, then it specifies the language version to run the
     /// test at. Otherwise, the test's default version is used.
     DartFormatter formatterForTest(FormatTest test, [Version? version]) {
-        var defaultLanguageVersion = isTall
-                ? DartFormatter.latestLanguageVersion
-                : DartFormatter.latestShortStyleLanguageVersion;
+        var defaultLanguageVersion =
+                isTall ? DartFormatter.latestLanguageVersion : DartFormatter.latestShortStyleLanguageVersion;
 
         return DartFormatter(
             languageVersion: version ?? defaultLanguageVersion,
             pageWidth: pageWidth,
             indent: test.options.leadingIndent ?? options.leadingIndent ?? 0,
-            experimentFlags: [
-                ...options.experimentFlags,
-                ...test.options.experimentFlags,
-            ],
-            trailingCommas:
-                    test.options.trailingCommas ??
-                    options.trailingCommas ??
-                    TrailingCommas.automate,
+            experimentFlags: [...options.experimentFlags, ...test.options.experimentFlags],
+            trailingCommas: test.options.trailingCommas ?? options.trailingCommas ?? TrailingCommas.automate,
         );
     }
 }

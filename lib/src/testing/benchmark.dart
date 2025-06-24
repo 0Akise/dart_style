@@ -10,14 +10,11 @@ final class Benchmark {
     /// Finds all of the benchmarks in the `benchmark/cases` directory, relative
     /// to [packageDirectory].
     static List<Benchmark> findAll(String packageDirectory) {
-        var casesDirectory = Directory(
-            p.join(packageDirectory, 'benchmark/case'),
-        );
+        var casesDirectory = Directory(p.join(packageDirectory, 'benchmark/case'));
 
         var benchmarks = [
             for (var entry in casesDirectory.listSync())
-                if (p.extension(entry.path) case '.unit' || '.stmt')
-                    read(entry.path),
+                if (p.extension(entry.path) case '.unit' || '.stmt') read(entry.path),
         ];
 
         benchmarks.sort((a, b) => a.name.compareTo(b.name));
@@ -42,12 +39,8 @@ final class Benchmark {
 
         var input = inputLines.join('\n');
 
-        var shortOutput = File(
-            p.setExtension(path, '.expect_short'),
-        ).readAsStringSync();
-        var tallOutput = File(
-            p.setExtension(path, '.expect'),
-        ).readAsStringSync();
+        var shortOutput = File(p.setExtension(path, '.expect_short')).readAsStringSync();
+        var tallOutput = File(p.setExtension(path, '.expect')).readAsStringSync();
 
         return Benchmark(
             name: p.basenameWithoutExtension(path),
@@ -94,19 +87,10 @@ final class Benchmark {
 /// process.
 Future<Never> rerunAsAot(List<String> arguments) async {
     var script = Platform.script.toFilePath();
-    var snapshotPath = p.join(
-        Directory.systemTemp.path,
-        p.setExtension(p.basename(script), '.aot'),
-    );
+    var snapshotPath = p.join(Directory.systemTemp.path, p.setExtension(p.basename(script), '.aot'));
 
     print('Creating AOT snapshot for $script...');
-    var result = await Process.run('dart', [
-        'compile',
-        'aot-snapshot',
-        '-o',
-        snapshotPath,
-        script,
-    ]);
+    var result = await Process.run('dart', ['compile', 'aot-snapshot', '-o', snapshotPath, script]);
     stdout.write(result.stdout);
     stderr.write(result.stderr);
     if (result.exitCode != 0) {
@@ -115,10 +99,7 @@ Future<Never> rerunAsAot(List<String> arguments) async {
     }
 
     print('Running AOT snapshot...');
-    var process = await Process.start('dartaotruntime', [
-        snapshotPath,
-        ...arguments,
-    ]);
+    var process = await Process.start('dartaotruntime', [snapshotPath, ...arguments]);
     await stdout.addStream(process.stdout);
     await stderr.addStream(process.stderr);
 

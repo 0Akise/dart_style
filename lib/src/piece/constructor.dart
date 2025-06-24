@@ -98,8 +98,7 @@ final class ConstructorPiece extends Piece {
     @override
     List<State> get additionalStates => [
         if (_initializers != null) _splitBeforeInitializers,
-        if (_canSplitParameters && _initializers != null)
-            _splitBetweenInitializers,
+        if (_canSplitParameters && _initializers != null) _splitBetweenInitializers,
     ];
 
     /// Apply constraints between how the parameters may split and how the
@@ -138,8 +137,7 @@ final class ConstructorPiece extends Piece {
     }
 
     @override
-    bool containsNewline(State state) =>
-            state == _splitBeforeInitializers || super.containsNewline(state);
+    bool containsNewline(State state) => state == _splitBeforeInitializers || super.containsNewline(state);
 
     @override
     void format(CodeWriter writer, State state) {

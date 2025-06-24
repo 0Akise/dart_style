@@ -57,10 +57,7 @@ enum Output {
                     jsonEncode({
                         'path': path,
                         'source': result.text,
-                        'selection': {
-                            'offset': result.selectionStart ?? -1,
-                            'length': result.selectionLength ?? -1,
-                        },
+                        'selection': {'offset': result.selectionStart ?? -1, 'length': result.selectionLength ?? -1},
                     }),
                 );
                 break;

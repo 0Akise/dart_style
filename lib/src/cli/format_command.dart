@@ -22,19 +22,13 @@ final class FormatCommand extends Command<int> {
     String get description => 'Idiomatically format Dart source code.';
 
     @override
-    String get invocation =>
-            '${runner!.executableName} $name [options...] <files or directories...>';
+    String get invocation => '${runner!.executableName} $name [options...] <files or directories...>';
 
     @override
     final String category;
 
     FormatCommand({bool verbose = false, this.category = ''}) {
-        argParser.addFlag(
-            'verbose',
-            abbr: 'v',
-            negatable: false,
-            help: 'Show all options and flags with --help.',
-        );
+        argParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Show all options and flags with --help.');
 
         if (verbose) argParser.addSeparator('Output options:');
 
@@ -57,8 +51,7 @@ final class FormatCommand extends Command<int> {
             allowed: ['all', 'changed', 'none'],
             allowedHelp: {
                 'all': 'All visited files and directories.',
-                'changed':
-                        'Only the names of files whose formatting is changed.',
+                'changed': 'Only the names of files whose formatting is changed.',
                 'none': 'No file names or directories.',
             },
             defaultsTo: 'changed',
@@ -149,12 +142,7 @@ final class FormatCommand extends Command<int> {
                     'If unset, links will be ignored.',
             hide: !verbose,
         );
-        argParser.addFlag(
-            'version',
-            negatable: false,
-            help: 'Show dart_style version.',
-            hide: !verbose,
-        );
+        argParser.addFlag('version', negatable: false, help: 'Show dart_style version.', hide: !verbose);
         argParser.addMultiOption(
             'enable-experiment',
             help:
@@ -163,8 +151,7 @@ final class FormatCommand extends Command<int> {
             hide: !verbose,
         );
 
-        if (verbose)
-            argParser.addSeparator('Options when formatting from stdin:');
+        if (verbose) argParser.addSeparator('Options when formatting from stdin:');
 
         argParser.addOption(
             'selection',
@@ -192,18 +179,15 @@ final class FormatCommand extends Command<int> {
             return 0;
         }
 
-        var show = const {
-            'all': Show.all,
-            'changed': Show.changed,
-            'none': Show.none,
-        }[argResults['show']]!;
+        var show = const {'all': Show.all, 'changed': Show.changed, 'none': Show.none}[argResults['show']]!;
 
-        var output = const {
-            'write': Output.write,
-            'show': Output.show,
-            'none': Output.none,
-            'json': Output.json,
-        }[argResults['output']]!;
+        var output =
+                const {
+                    'write': Output.write,
+                    'show': Output.show,
+                    'none': Output.none,
+                    'json': Output.json,
+                }[argResults['output']]!;
 
         var summary = Summary.none;
         switch (argResults['summary'] as String) {
@@ -222,8 +206,7 @@ final class FormatCommand extends Command<int> {
 
         // If the user wants to print the code and didn't indicate how the files
         // should be printed, default to only showing the code.
-        if (!argResults.wasParsed('show') &&
-                (output == Output.show || output == Output.json)) {
+        if (!argResults.wasParsed('show') && (output == Output.show || output == Output.json)) {
             show = Show.none;
         }
 
@@ -248,11 +231,7 @@ final class FormatCommand extends Command<int> {
             if (version == 'latest') {
                 languageVersion = DartFormatter.latestLanguageVersion;
             } else if (versionPattern.firstMatch(version) case var match?) {
-                languageVersion = Version(
-                    int.parse(match[1]!),
-                    int.parse(match[2]!),
-                    0,
-                );
+                languageVersion = Version(int.parse(match[1]!), int.parse(match[2]!), 0);
             } else {
                 usageException(
                     '--language-version must be a version like "3.2" or '
@@ -273,13 +252,9 @@ final class FormatCommand extends Command<int> {
         if (pageWidthString != null) {
             pageWidth = int.tryParse(pageWidthString);
             if (pageWidth == null) {
-                usageException(
-                    'Page width must be an integer, was "$pageWidthString".',
-                );
+                usageException('Page width must be an integer, was "$pageWidthString".');
             } else if (pageWidth <= 0) {
-                usageException(
-                    'Page width must be a positive number, was $pageWidth.',
-                );
+                usageException('Page width must be a positive number, was $pageWidth.');
             }
         }
 
@@ -290,9 +265,7 @@ final class FormatCommand extends Command<int> {
             trailingCommas = switch (argResults['trailing-commas']) {
                 'automate' => TrailingCommas.automate,
                 'preserve' => TrailingCommas.preserve,
-                var mode => usageException(
-                    '--trailing-commas must be "automate" or "preserve", was "$mode".',
-                ),
+                var mode => usageException('--trailing-commas must be "automate" or "preserve", was "$mode".'),
             };
         }
 
@@ -343,15 +316,11 @@ final class FormatCommand extends Command<int> {
         }
 
         if (argResults.rest.isEmpty && output == Output.write) {
-            usageException(
-                'Cannot use --output=write when reading from stdin.',
-            );
+            usageException('Cannot use --output=write when reading from stdin.');
         }
 
         if (argResults.wasParsed('stdin-name') && argResults.rest.isNotEmpty) {
-            usageException(
-                'Cannot pass --stdin-name when not reading from stdin.',
-            );
+            usageException('Cannot pass --stdin-name when not reading from stdin.');
         }
         var stdinName = argResults['stdin-name'] as String?;
 
@@ -387,9 +356,7 @@ final class FormatCommand extends Command<int> {
 
         // Can only preserve a selection when parsing from stdin.
         if (argResults.rest.isNotEmpty) {
-            throw FormatException(
-                'Can only use --$optionName when reading from stdin.',
-            );
+            throw FormatException('Can only use --$optionName when reading from stdin.');
         }
 
         try {
@@ -401,9 +368,7 @@ final class FormatCommand extends Command<int> {
                 );
             }
 
-            return coordinates
-                    .map<int>((coord) => int.parse(coord.trim()))
-                    .toList();
+            return coordinates.map<int>((coord) => int.parse(coord.trim())).toList();
         } on FormatException catch (_) {
             throw FormatException(
                 '--$optionName must be a colon-separated pair of integers, was '

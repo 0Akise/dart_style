@@ -110,8 +110,7 @@ final class CombinatorRule extends Rule {
     /// Returns `true` if [chunk] is for a combinator or a name in the
     /// combinator at index [combinator].
     bool _isCombinatorSplit(int combinator, Chunk chunk) {
-        return _combinators.contains(chunk) ||
-                _names[combinator].contains(chunk);
+        return _combinators.contains(chunk) || _names[combinator].contains(chunk);
     }
 
     @override

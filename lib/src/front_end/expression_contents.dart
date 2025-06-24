@@ -91,17 +91,13 @@ class ExpressionContents {
         // common code like this to split:
         //
         //       Text('Item 1', style: TextStyle(color: Colors.white));
-        return contents.totalNamedArguments > 2 &&
-                contents.namedArguments > 0 &&
-                contents.nestedNamedArguments > 0;
+        return contents.totalNamedArguments > 2 && contents.namedArguments > 0 && contents.nestedNamedArguments > 0;
     }
 
     /// Begin tracking a collection literal and its contents.
     void beginCollection({bool isNamed = false}) {
         _stack.last.collections++;
-        _stack.add(
-            _Contents(isNamed ? _Type.namedCollection : _Type.collection),
-        );
+        _stack.add(_Contents(isNamed ? _Type.namedCollection : _Type.collection));
     }
 
     /// Ends the most recently begun collection literal and returns whether it
@@ -134,9 +130,7 @@ class ExpressionContents {
         // in parallel with each on its own line. But that's only true when there
         // are multiple elements, so we don't eagerly split collections with just a
         // single element.
-        return elements.length > 1 &&
-                contents.type == _Type.namedCollection &&
-                contents.totalNamedArguments > 0;
+        return elements.length > 1 && contents.type == _Type.namedCollection && contents.totalNamedArguments > 0;
     }
 
     /// Ends the most recently begun operation and returns its contents.
@@ -146,8 +140,7 @@ class ExpressionContents {
         // Transitively include this operation's contents in the surrounding one.
         var parent = _stack.last;
         parent.collections += contents.collections;
-        parent.nestedNamedArguments +=
-                contents.namedArguments + contents.nestedNamedArguments;
+        parent.nestedNamedArguments += contents.namedArguments + contents.nestedNamedArguments;
 
         return contents;
     }
@@ -170,12 +163,7 @@ class ExpressionContents {
             BooleanLiteral() => true,
             IntegerLiteral() => true,
             DoubleLiteral() => true,
-            PrefixExpression(
-                operator: Token(type: TokenType.MINUS),
-                :var operand,
-            )
-                    when _isTrivial(operand) =>
-                true,
+            PrefixExpression(operator: Token(type: TokenType.MINUS), :var operand) when _isTrivial(operand) => true,
             _ => false,
         };
     }

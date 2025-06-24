@@ -27,8 +27,7 @@ final class ForPiece extends Piece {
     ///         var element in list) { ... }
     final bool _indent;
 
-    ForPiece(this._forKeyword, this._parts, {required bool indent})
-        : _indent = indent;
+    ForPiece(this._forKeyword, this._parts, {required bool indent}) : _indent = indent;
 
     @override
     void format(CodeWriter writer, State state) {
@@ -79,18 +78,9 @@ abstract base class ForInPiece extends Piece {
     /// The `in` keyword followed by the sequence expression.
     final Piece _sequence;
 
-    factory ForInPiece(
-        Piece variable,
-        Piece sequence, {
-        bool canBlockSplitSequence = false,
-        required bool version37,
-    }) {
+    factory ForInPiece(Piece variable, Piece sequence, {bool canBlockSplitSequence = false, required bool version37}) {
         if (version37) {
-            return _ForInPieceV37(
-                variable,
-                sequence,
-                canBlockSplitSequence: canBlockSplitSequence,
-            );
+            return _ForInPieceV37(variable, sequence, canBlockSplitSequence: canBlockSplitSequence);
         } else {
             return _ForInPiece(variable, sequence);
         }
@@ -128,10 +118,7 @@ final class _ForInPiece extends ForInPiece {
     @override
     Set<Shape> allowedChildShapes(State state, Piece child) => switch (state) {
         // Always allow block-splitting the sequence if it supports it.
-        State.unsplit when child == _sequence => const {
-            Shape.inline,
-            Shape.block,
-        },
+        State.unsplit when child == _sequence => const {Shape.inline, Shape.block},
         State.unsplit => Shape.onlyInline,
         _ => Shape.all,
     };
@@ -150,12 +137,9 @@ final class _ForInPieceV37 extends ForInPiece {
     ///     }
     final bool _canBlockSplitSequence;
 
-    _ForInPieceV37(
-        super._variable,
-        super._sequence, {
-        bool canBlockSplitSequence = false,
-    }) : _canBlockSplitSequence = canBlockSplitSequence,
-             super._();
+    _ForInPieceV37(super._variable, super._sequence, {bool canBlockSplitSequence = false})
+        : _canBlockSplitSequence = canBlockSplitSequence,
+            super._();
 
     @override
     Set<Shape> allowedChildShapes(State state, Piece child) {

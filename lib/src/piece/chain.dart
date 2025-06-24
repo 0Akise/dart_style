@@ -224,10 +224,7 @@ abstract base class ChainPiece extends Piece {
                     writer.newline();
 
                     // Every non-property call except the last will be on its own line.
-                    writer.format(
-                        _calls[i]._call,
-                        separate: i < _calls.length - 1,
-                    );
+                    writer.format(_calls[i]._call, separate: i < _calls.length - 1);
                 }
 
                 writer.popIndent();
@@ -266,10 +263,7 @@ abstract base class ChainPiece extends Piece {
 
                     // The chain is fully split so every call except for the last is on
                     // its own line.
-                    writer.format(
-                        _calls[i]._call,
-                        separate: i < _calls.length - 1,
-                    );
+                    writer.format(_calls[i]._call, separate: i < _calls.length - 1);
                 }
 
                 writer.popIndent();
@@ -312,9 +306,7 @@ final class _ChainPiece extends ChainPiece {
         //     variable = target
         //         .property
         //         .another;
-        if (state == State.split &&
-                !_isCascade &&
-                _leadingProperties == _calls.length) {
+        if (state == State.split && !_isCascade && _leadingProperties == _calls.length) {
             return 2;
         }
 
@@ -329,10 +321,7 @@ final class _ChainPiece extends ChainPiece {
                 // in the target.
                 State.unsplit ||
                 ChainPiece._blockFormatTrailingCall ||
-                ChainPiece._splitAfterProperties => const {
-                    Shape.inline,
-                    Shape.block,
-                },
+                ChainPiece._splitAfterProperties => const {Shape.inline, Shape.block},
                 _ => Shape.all,
             };
         } else {
@@ -415,8 +404,7 @@ final class ChainCall {
 
     ChainCall(this._call, this.type);
 
-    bool get canSplit =>
-            type == CallType.splittableCall || type == CallType.blockFormatCall;
+    bool get canSplit => type == CallType.splittableCall || type == CallType.blockFormatCall;
 
     /// Applies a postfix operation to this call.
     ///

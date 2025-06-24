@@ -90,10 +90,7 @@ final class CaseExpressionPiece extends Piece {
     @override
     void format(CodeWriter writer, State state) {
         // If there is a split guard, then indent the pattern past it.
-        var indentPatternForGuard =
-                !_canBlockSplitPattern &&
-                !_patternIsLogicalOr &&
-                state == _beforeWhenAndBody;
+        var indentPatternForGuard = !_canBlockSplitPattern && !_patternIsLogicalOr && state == _beforeWhenAndBody;
 
         if (indentPatternForGuard) writer.pushIndent(Indent.expression);
 

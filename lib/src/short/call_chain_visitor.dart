@@ -166,24 +166,10 @@ final class CallChainVisitor {
             calls.remove(hangingCall);
         }
 
-        return CallChainVisitor._(
-            visitor,
-            target,
-            properties,
-            calls,
-            blockCalls,
-            hangingCall,
-        );
+        return CallChainVisitor._(visitor, target, properties, calls, blockCalls, hangingCall);
     }
 
-    CallChainVisitor._(
-        this._visitor,
-        this._target,
-        this._properties,
-        this._calls,
-        this._blockCalls,
-        this._hangingCall,
-    );
+    CallChainVisitor._(this._visitor, this._target, this._properties, this._calls, this._blockCalls, this._hangingCall);
 
     /// Builds chunks for the call chain.
     void visit() {
@@ -198,10 +184,7 @@ final class CallChainVisitor {
 
         if (splitOnTarget) {
             if (_properties.length > 1) {
-                _propertyRule = PositionalRule(
-                    null,
-                    argumentCount: _properties.length,
-                );
+                _propertyRule = PositionalRule(null, argumentCount: _properties.length);
                 _visitor.builder.startLazyRule(_propertyRule);
             } else {
                 _enableRule(lazy: true);
@@ -217,10 +200,7 @@ final class CallChainVisitor {
             _properties.single.write(this);
         } else if (_properties.length > 1) {
             if (!splitOnTarget) {
-                _propertyRule = PositionalRule(
-                    null,
-                    argumentCount: _properties.length,
-                );
+                _propertyRule = PositionalRule(null, argumentCount: _properties.length);
                 _visitor.builder.startRule(_propertyRule);
             }
 
@@ -308,10 +288,7 @@ final class CallChainVisitor {
         if (expression is FunctionExpression) {
             if (expression.body is! BlockFunctionBody) return false;
 
-            return (expression.body as BlockFunctionBody)
-                    .block
-                    .statements
-                    .isEmpty;
+            return (expression.body as BlockFunctionBody).block.statements.isEmpty;
         }
 
         // If the expression ends in an argument list, base the splitting on the
@@ -355,9 +332,7 @@ final class CallChainVisitor {
         //
         //     foo().bar().baz(
         //         argument, list);
-        if (_blockCalls == null &&
-                _calls.isNotEmpty &&
-                selector == _calls.last) {
+        if (_blockCalls == null && _calls.isNotEmpty && selector == _calls.last) {
             _disableRule();
         }
 
@@ -377,10 +352,7 @@ final class CallChainVisitor {
         // "." when calling a single method on a single name. This is especially
         // important because the identifier is often a library prefix, and splitting
         // there looks really odd.
-        if (_properties.isEmpty &&
-                _calls.length == 1 &&
-                _blockCalls == null &&
-                _target is SimpleIdentifier) {
+        if (_properties.isEmpty && _calls.length == 1 && _blockCalls == null && _target is SimpleIdentifier) {
             _endSpan();
         }
     }
@@ -486,8 +458,7 @@ final class _MethodSelector extends _Selector {
     bool get isProperty => false;
 
     @override
-    bool isBlockCall(SourceVisitor visitor) =>
-            ArgumentListVisitor(visitor, _node.argumentList).hasBlockArguments;
+    bool isBlockCall(SourceVisitor visitor) => ArgumentListVisitor(visitor, _node.argumentList).hasBlockArguments;
 
     @override
     void writeSelector(CallChainVisitor visitor) {
@@ -498,10 +469,7 @@ final class _MethodSelector extends _Selector {
 
         visitor._visitor.builder.nestExpression();
         visitor._visitor.visit(_node.typeArguments);
-        visitor._visitor.visitArgumentList(
-            _node.argumentList,
-            nestExpression: false,
-        );
+        visitor._visitor.visitArgumentList(_node.argumentList, nestExpression: false);
         visitor._visitor.builder.unnest();
     }
 }
@@ -532,8 +500,7 @@ final class _PropertySelector extends _Selector {
 
 /// If [expression] is a null-assertion operator, returns its operand.
 Expression _unwrapNullAssertion(Expression expression) {
-    if (expression is PostfixExpression &&
-            expression.operator.type == TokenType.BANG) {
+    if (expression is PostfixExpression && expression.operator.type == TokenType.BANG) {
         return expression.operand;
     }
 
@@ -591,11 +558,7 @@ Expression _unwrapTarget(Expression node, List<_Selector> calls) {
     return node;
 }
 
-Expression _unwrapPostfix(
-    Expression node,
-    Expression target,
-    List<_Selector> calls,
-) {
+Expression _unwrapPostfix(Expression node, Expression target, List<_Selector> calls) {
     target = _unwrapTarget(target, calls);
 
     // If we don't have a preceding selector to hang the postfix expression off
@@ -609,11 +572,7 @@ Expression _unwrapPostfix(
     return target;
 }
 
-Expression _unwrapSelector(
-    Expression target,
-    _Selector selector,
-    List<_Selector> calls,
-) {
+Expression _unwrapSelector(Expression target, _Selector selector, List<_Selector> calls) {
     target = _unwrapTarget(target, calls);
     calls.add(selector);
     return target;

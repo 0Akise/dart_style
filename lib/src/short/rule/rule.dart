@@ -153,9 +153,7 @@ base class Rule with FastHash {
     /// When this rule's value is between [min] and [max] (inclusive), constrains
     /// [other] to [otherValue].
     void addRangeConstraint(int min, int max, Rule other, int otherValue) {
-        _constraints
-                .putIfAbsent(other, () => [])
-                .add(_Constraint(min, max, otherValue));
+        _constraints.putIfAbsent(other, () => []).add(_Constraint(min, max, otherValue));
     }
 
     /// Constrains [other] to its fully split value when this rule is split in

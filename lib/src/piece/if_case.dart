@@ -57,12 +57,8 @@ final class IfCasePiece extends Piece {
     /// Whether the pattern can be block formatted.
     final bool _canBlockSplitPattern;
 
-    IfCasePiece(
-        this._value,
-        this._pattern,
-        this._guard, {
-        required bool canBlockSplitPattern,
-    }) : _canBlockSplitPattern = canBlockSplitPattern;
+    IfCasePiece(this._value, this._pattern, this._guard, {required bool canBlockSplitPattern})
+        : _canBlockSplitPattern = canBlockSplitPattern;
 
     @override
     List<State> get additionalStates => [
@@ -76,9 +72,7 @@ final class IfCasePiece extends Piece {
         return switch (state) {
             // When not splitting before `case` or `when`, we only allow newlines
             // in block-formatted patterns.
-            State.unsplit when child == _pattern => Shape.anyIf(
-                _canBlockSplitPattern,
-            ),
+            State.unsplit when child == _pattern => Shape.anyIf(_canBlockSplitPattern),
 
             // Allow newlines only in the guard if we split before `when`.
             _beforeWhen when child == _guard => Shape.all,

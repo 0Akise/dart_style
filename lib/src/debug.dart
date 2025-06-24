@@ -135,13 +135,8 @@ void dumpChunks(int start, List<Chunk> chunks) {
         row.add(ruleString);
 
         var rules = chunks.map((chunk) => chunk.rule).toSet();
-        var constrainedRules = rule.constrainedRules.toSet().intersection(
-            rules,
-        );
-        writeIf(
-            constrainedRules.isNotEmpty,
-            () => "-> ${constrainedRules.join(" ")}",
-        );
+        var constrainedRules = rule.constrainedRules.toSet().intersection(rules);
+        writeIf(constrainedRules.isNotEmpty, () => "-> ${constrainedRules.join(" ")}");
 
         var properties = [
             if (chunk.flushLeft) 'fl',
@@ -159,8 +154,7 @@ void dumpChunks(int start, List<Chunk> chunks) {
             var spanBars = '';
             for (var span in spans) {
                 if (chunk.spans.contains(span)) {
-                    if (index == chunks.length - 1 ||
-                            !chunks[index + 1].spans.contains(span)) {
+                    if (index == chunks.length - 1 || !chunks[index + 1].spans.contains(span)) {
                         // This is the last chunk with the span.
                         spanBars += '╙';
                     } else {
@@ -169,8 +163,7 @@ void dumpChunks(int start, List<Chunk> chunks) {
                 } else {
                     // If the next chunk has this span, then show it bridging this chunk
                     // and the next because a split between them breaks the span.
-                    if (index < chunks.length - 1 &&
-                            chunks[index + 1].spans.contains(span)) {
+                    if (index < chunks.length - 1 && chunks[index + 1].spans.contains(span)) {
                         if (span.cost == 1) {
                             spanBars += '╓';
                         } else {
@@ -321,44 +314,44 @@ final class _PieceDebugTree {
         return result;
     }
 
-void write(StringBuffer buffer, int indent) {
-    buffer.write(label);
-    if (children.isEmpty) return;
+    void write(StringBuffer buffer, int indent) {
+        buffer.write(label);
+        if (children.isEmpty) return;
 
-    buffer.write('(');
+        buffer.write('(');
 
-    // Split the tree if it is too long.
-    var isSplit = indent * 2 + width > DartFormatter.defaultPageWidth;
-    if (isSplit) {
-        indent++;
-        buffer.writeln();
-        buffer.write('  ' * indent);
-    }
-
-    var first = true;
-    for (var child in children) {
-        if (!first) {
-            if (isSplit) {
-                buffer.writeln();
-                buffer.write('  ' * indent);
-            } else {
-                buffer.write(' ');
-            }
+        // Split the tree if it is too long.
+        var isSplit = indent * 2 + width > DartFormatter.defaultPageWidth;
+        if (isSplit) {
+            indent++;
+            buffer.writeln();
+            buffer.write('  ' * indent);
         }
 
-        child.write(buffer, indent);
+        var first = true;
+        for (var child in children) {
+            if (!first) {
+                if (isSplit) {
+                    buffer.writeln();
+                    buffer.write('  ' * indent);
+                } else {
+                    buffer.write(' ');
+                }
+            }
 
-        first = false;
+            child.write(buffer, indent);
+
+            first = false;
+        }
+
+        if (isSplit) {
+            indent--;
+            buffer.writeln();
+            buffer.write('  ' * indent);
+        }
+
+        buffer.write(')');
     }
-
-    if (isSplit) {
-        indent--;
-        buffer.writeln();
-        buffer.write('  ' * indent);
-    }
-
-    buffer.write(')');
-}
 }
 
 String _color(String ansiEscape) => useAnsiColors ? ansiEscape : '';

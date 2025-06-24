@@ -10,21 +10,16 @@ import 'file_system.dart';
 
 /// An implementation of [FileSystem] using `dart:io`.
 final class IOFileSystem implements FileSystem {
-    Future<IOFileSystemPath> makePath(String path) async =>
-            IOFileSystemPath._(path);
+    Future<IOFileSystemPath> makePath(String path) async => IOFileSystemPath._(path);
 
     @override
-    Future<bool> fileExists(covariant IOFileSystemPath path) =>
-            File(path.path).exists();
+    Future<bool> fileExists(covariant IOFileSystemPath path) => File(path.path).exists();
 
     @override
-    Future<FileSystemPath> join(covariant IOFileSystemPath from, String to) =>
-            makePath(p.join(from.path, to));
+    Future<FileSystemPath> join(covariant IOFileSystemPath from, String to) => makePath(p.join(from.path, to));
 
     @override
-    Future<FileSystemPath?> parentDirectory(
-        covariant IOFileSystemPath path,
-    ) async {
+    Future<FileSystemPath?> parentDirectory(covariant IOFileSystemPath path) async {
         // Make [path] absolute (if not already) so that we can walk outside of the
         // literal path string passed.
         var result = p.dirname(p.absolute(path.path));
@@ -36,8 +31,7 @@ final class IOFileSystem implements FileSystem {
     }
 
     @override
-    Future<String> readFile(covariant IOFileSystemPath path) =>
-            File(path.path).readAsString();
+    Future<String> readFile(covariant IOFileSystemPath path) => File(path.path).readAsString();
 }
 
 /// An abstraction over a file path string, used by [IOFileSystem].

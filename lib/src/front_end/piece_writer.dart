@@ -91,11 +91,7 @@ final class PieceWriter {
     ///
     /// Does nothing if [token] is `null`. If [spaceBefore] is `true`, writes a
     /// space before the token, likewise with [spaceAfter].
-    void token(
-        Token? token, {
-        bool spaceBefore = false,
-        bool spaceAfter = false,
-    }) {
+    void token(Token? token, {bool spaceBefore = false, bool spaceAfter = false}) {
         if (token == null) return;
 
         if (spaceBefore) space();
@@ -178,28 +174,20 @@ final class PieceWriter {
     /// piece beginning with that metadata. If [inlineMetadata] is `true`, then
     /// the metadata is allowed to stay on the same line as the content.
     /// Otherwise, a newline is inserted after every annotation.
-    Piece build(
-        void Function() buildCallback, {
-        List<Annotation> metadata = const [],
-        bool inlineMetadata = false,
-    }) {
+    Piece build(void Function() buildCallback, {List<Annotation> metadata = const [], bool inlineMetadata = false}) {
         _flushSpace();
         _currentCode = null;
 
         var leadingPieces = const <Piece>[];
         if (metadata.isNotEmpty) {
-            leadingPieces = [
-                for (var annotation in metadata) _visitor.nodePiece(annotation),
-            ];
+            leadingPieces = [for (var annotation in metadata) _visitor.nodePiece(annotation)];
 
             // If there are comments between the metadata and declaration, then hoist
             // them out too so they don't get embedded inside the beginning piece of
             // the declaration. [SequenceBuilder] handles that for most comments
             // preceding a declaration but won't see these ones because they come
             // after the metadata.
-            leadingPieces.addAll(
-                takeCommentsBefore(metadata.last.endToken.next!),
-            );
+            leadingPieces.addAll(takeCommentsBefore(metadata.last.endToken.next!));
         }
 
         _pieces.add([]);
@@ -212,19 +200,14 @@ final class PieceWriter {
         var builtPieces = _pieces.removeLast();
         assert(builtPieces.isNotEmpty);
 
-        var builtPiece = builtPieces.length == 1
-                ? builtPieces.first
-                : AdjacentPiece(builtPieces);
+        var builtPiece = builtPieces.length == 1 ? builtPieces.first : AdjacentPiece(builtPieces);
 
         if (leadingPieces.isEmpty) {
             // No metadata, so return the content piece directly.
             return builtPiece;
         } else if (inlineMetadata) {
             // Wrap the metadata and content in a splittable list.
-            var list = DelimitedListBuilder(
-                _visitor,
-                const ListStyle(commas: Commas.none, spaceWhenUnsplit: true),
-            );
+            var list = DelimitedListBuilder(_visitor, const ListStyle(commas: Commas.none, spaceWhenUnsplit: true));
 
             for (var piece in leadingPieces) {
                 list.add(piece);
@@ -253,11 +236,7 @@ final class PieceWriter {
     ///
     /// If [commaAfter] is `true`, looks for and writes a comma following the
     /// token if there is one.
-    Piece tokenPiece(
-        Token token, {
-        Token? discardedToken,
-        bool commaAfter = false,
-    }) {
+    Piece tokenPiece(Token token, {Token? discardedToken, bool commaAfter = false}) {
         var tokenPiece = _makeCodePiece(discardedToken: discardedToken, token);
 
         if (commaAfter) {
@@ -275,32 +254,19 @@ final class PieceWriter {
     /// If [metadata] is empty, then invokes [buildCallback] directly. Otherwise,
     /// creates a new [Piece] that contains the pieces written from [metadata]
     /// followed by the code written by [buildCallback].
-    void withMetadata(
-        List<Annotation> metadata,
-        void Function() buildCallback, {
-        bool inlineMetadata = false,
-    }) {
+    void withMetadata(List<Annotation> metadata, void Function() buildCallback, {bool inlineMetadata = false}) {
         // If there's no metadata (the common case), then call the callback
         // directly instead of creating a separate AdjacentBuilder. That way, we
         // avoid splitting pieces at the boundary here if not needed.
         if (metadata.isEmpty) {
             buildCallback();
         } else {
-            add(
-                build(
-                    buildCallback,
-                    metadata: metadata,
-                    inlineMetadata: inlineMetadata,
-                ),
-            );
+            add(build(buildCallback, metadata: metadata, inlineMetadata: inlineMetadata));
         }
     }
 
     /// Creates a new [Piece] for [comment] and returns it.
-    Piece commentPiece(
-        SourceComment comment, [
-        Whitespace trailingWhitespace = Whitespace.none,
-    ]) {
+    Piece commentPiece(SourceComment comment, [Whitespace trailingWhitespace = Whitespace.none]) {
         var piece = switch (comment.text) {
             '// dart format off' => EnableFormattingCommentPiece(
                 enable: false,
@@ -315,12 +281,7 @@ final class PieceWriter {
             _ => CommentPiece(trailingWhitespace),
         };
 
-        _write(
-            piece,
-            comment.text,
-            comment.offset,
-            multiline: comment.type.mayBeMultiline,
-        );
+        _write(piece, comment.text, comment.offset, multiline: comment.type.mayBeMultiline);
         return piece;
     }
 
@@ -341,10 +302,7 @@ final class PieceWriter {
     ///
     /// This method lets you hoist comments before an arbitary amount of syntax
     /// visited and built by calling [buildCallback].
-    void hoistLeadingComments(
-        Token firstToken,
-        Piece Function() buildCallback,
-    ) {
+    void hoistLeadingComments(Token firstToken, Piece Function() buildCallback) {
         var leadingComments = takeCommentsBefore(firstToken);
 
         var piece = buildCallback();
@@ -385,9 +343,7 @@ final class PieceWriter {
 
         // Include any comments on the preceding discarded token, if there is one.
         if (discardedToken != null) {
-            comments = _comments
-                    .commentsBefore(discardedToken)
-                    .concatenate(comments);
+            comments = _comments.commentsBefore(discardedToken).concatenate(comments);
         }
 
         var piece = CodePiece(_splitComments(comments, token));
@@ -442,12 +398,7 @@ final class PieceWriter {
     ///
     /// The [offset] parameter is the offset in the original source code of the
     /// beginning of where [text] appears.
-    void _write(
-        TextPiece piece,
-        String text,
-        int offset, {
-        bool multiline = false,
-    }) {
+    void _write(TextPiece piece, String text, int offset, {bool multiline = false}) {
         piece.append(
             text,
             multiline: multiline,
@@ -473,11 +424,7 @@ final class PieceWriter {
         Profile.begin('PieceWriter.finish() format piece tree');
 
         var cache = SolutionCache(version37: version37);
-        var solver = Solver(
-            cache,
-            pageWidth: pageWidth,
-            leadingIndent: _formatter.indent,
-        );
+        var solver = Solver(cache, pageWidth: pageWidth, leadingIndent: _formatter.indent);
 
         var solution = solver.format(rootPiece);
         var output = solution.code.build(source, lineEnding);

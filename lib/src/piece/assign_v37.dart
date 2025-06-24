@@ -174,8 +174,7 @@ final class AssignPieceV37 extends Piece {
     }
 
     @override
-    Set<Shape> allowedChildShapes(State state, Piece child) =>
-            Shape.anyIf(state != State.unsplit);
+    Set<Shape> allowedChildShapes(State state, Piece child) => Shape.anyIf(state != State.unsplit);
 
     @override
     void format(CodeWriter writer, State state) {

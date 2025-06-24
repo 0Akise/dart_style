@@ -18,23 +18,17 @@ final class TestFileSystem implements FileSystem {
     }
 
     @override
-    Future<bool> fileExists(covariant TestFileSystemPath path) async =>
-            _files.containsKey(path._path);
+    Future<bool> fileExists(covariant TestFileSystemPath path) async => _files.containsKey(path._path);
 
     @override
-    Future<FileSystemPath> join(
-        covariant TestFileSystemPath from,
-        String to,
-    ) async {
+    Future<FileSystemPath> join(covariant TestFileSystemPath from, String to) async {
         // If it's an absolute path, discard [from].
         if (to.startsWith('|')) return TestFileSystemPath(to);
         return TestFileSystemPath('${from._path}|$to');
     }
 
     @override
-    Future<FileSystemPath?> parentDirectory(
-        covariant TestFileSystemPath path,
-    ) async {
+    Future<FileSystemPath?> parentDirectory(covariant TestFileSystemPath path) async {
         var parts = path._path.split('|');
         if (parts.length == 1) return null;
 

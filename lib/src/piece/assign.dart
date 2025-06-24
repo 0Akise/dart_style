@@ -92,15 +92,10 @@ final class AssignPiece extends Piece {
     ///       thingToDo(argument, argument);
     final bool _avoidSplit;
 
-    AssignPiece(this._left, this._right, {bool avoidSplit = true})
-        : _avoidSplit = avoidSplit;
+    AssignPiece(this._left, this._right, {bool avoidSplit = true}) : _avoidSplit = avoidSplit;
 
     @override
-    List<State> get additionalStates => [
-        _blockOrHeadlineSplitRight,
-        _blockSplitLeft,
-        State.split,
-    ];
+    List<State> get additionalStates => [_blockOrHeadlineSplitRight, _blockSplitLeft, State.split];
 
     @override
     int stateCost(State state) => switch (state) {
@@ -113,14 +108,8 @@ final class AssignPiece extends Piece {
         return switch (state) {
             State.unsplit => Shape.onlyInline,
             _blockSplitLeft when child == _left => Shape.onlyBlock,
-            _blockSplitLeft when child == _right => const {
-                Shape.inline,
-                Shape.other,
-            },
-            _blockOrHeadlineSplitRight when child == _right => const {
-                Shape.block,
-                Shape.headline,
-            },
+            _blockSplitLeft when child == _right => const {Shape.inline, Shape.other},
+            _blockOrHeadlineSplitRight when child == _right => const {Shape.block, Shape.headline},
             _ => Shape.all,
         };
     }

@@ -85,16 +85,11 @@ final class CommentWriter {
         // which confuses some of these calculations. We don't want to allow a
         // blank line between the script tag and a following comment anyway, so
         // just override the script tag's line.
-        if (token.previous!.type == TokenType.SCRIPT_TAG)
-            previousLine = tokenLine;
+        if (token.previous!.type == TokenType.SCRIPT_TAG) previousLine = tokenLine;
 
         // ignore: prefer_const_constructors
         var comments = CommentSequence._([], []);
-        for (
-            Token? comment = token.precedingComments;
-            comment != null;
-            comment = comment.next
-        ) {
+        for (Token? comment = token.precedingComments; comment != null; comment = comment.next) {
             var commentLine = _startLine(comment);
 
             var text = comment.lexeme.trim();
@@ -110,24 +105,17 @@ final class CommentWriter {
             }
 
             CommentType type;
-            if (text.startsWith('///') && !text.startsWith('////') ||
-                    text.startsWith('/**') && text != '/**/') {
+            if (text.startsWith('///') && !text.startsWith('////') || text.startsWith('/**') && text != '/**/') {
                 type = CommentType.doc;
             } else if (comment.type == TokenType.SINGLE_LINE_COMMENT) {
                 type = CommentType.line;
-            } else if (commentLine == previousLine ||
-                    commentLine == tokenLine) {
+            } else if (commentLine == previousLine || commentLine == tokenLine) {
                 type = CommentType.inlineBlock;
             } else {
                 type = CommentType.block;
             }
 
-            var sourceComment = SourceComment(
-                text,
-                type,
-                offset: comment.offset,
-                flushLeft: flushLeft,
-            );
+            var sourceComment = SourceComment(text, type, offset: comment.offset, flushLeft: flushLeft);
 
             comments._add(linesBefore, sourceComment);
 
@@ -139,19 +127,16 @@ final class CommentWriter {
     }
 
     /// Whether there are any newlines between [from] and [to].
-    bool hasNewlineBetween(Token from, Token to) =>
-            _endLine(from) < _startLine(to);
+    bool hasNewlineBetween(Token from, Token to) => _endLine(from) < _startLine(to);
 
     /// Gets the 1-based line number that the beginning of [token] lies on.
-    int _startLine(Token token) =>
-            _lineInfo.getLocation(token.offset).lineNumber;
+    int _startLine(Token token) => _lineInfo.getLocation(token.offset).lineNumber;
 
     /// Gets the 1-based line number that the end of [token] lies on.
     int _endLine(Token token) => _lineInfo.getLocation(token.end).lineNumber;
 
     /// Gets the 1-based column number that the beginning of [token] lies on.
-    int _startColumn(Token token) =>
-            _lineInfo.getLocation(token.offset).columnNumber;
+    int _startColumn(Token token) => _lineInfo.getLocation(token.offset).columnNumber;
 }
 
 /// A comment in the source, with a bit of information about the surrounding
@@ -175,20 +160,14 @@ final class SourceComment {
     /// Used to track selection markers within the comment.
     final int offset;
 
-    SourceComment(
-        this.text,
-        this.type, {
-        required this.flushLeft,
-        required this.offset,
-    });
+    SourceComment(this.text, this.type, {required this.flushLeft, required this.offset});
 
     /// Whether this comment ends with a mandatory newline, because it's a line
     /// comment or a block comment that should be on its own line.
     bool get requiresNewline => type != CommentType.inlineBlock;
 
     @override
-    String toString() =>
-            '`$text` ${type.toString().replaceAll('CommentType.', '')}';
+    String toString() => '`$text` ${type.toString().replaceAll('CommentType.', '')}';
 }
 
 /// A list of source code comments and the number of newlines between them, as
@@ -237,8 +216,7 @@ final class CommentSequence extends ListBase<SourceComment> {
     const CommentSequence._(this._linesBetween, this._comments);
 
     /// Whether this sequence contains any comments that require a newline.
-    bool get requiresNewline =>
-            _comments.any((comment) => comment.requiresNewline);
+    bool get requiresNewline => _comments.any((comment) => comment.requiresNewline);
 
     /// The number of newlines between the comment at [commentIndex] and the
     /// preceding comment or token.
@@ -287,16 +265,14 @@ final class CommentSequence extends ListBase<SourceComment> {
     int get length => _comments.length;
 
     @override
-    set length(int newLength) =>
-            throw UnsupportedError('Comment sequence can\'t be modified.');
+    set length(int newLength) => throw UnsupportedError('Comment sequence can\'t be modified.');
 
     /// The comment at [index].
     @override
     SourceComment operator [](int index) => _comments[index];
 
     @override
-    void operator []=(int index, SourceComment value) =>
-            throw UnsupportedError('Comment sequence can\'t be modified.');
+    void operator []=(int index, SourceComment value) => throw UnsupportedError('Comment sequence can\'t be modified.');
 
     void _add(int linesBefore, SourceComment comment) {
         _linesBetween.add(linesBefore);
@@ -325,8 +301,7 @@ final class CommentSequence extends ListBase<SourceComment> {
             // newline of the right sequence.
             _linesBetween[_linesBetween.length - 1] + other._linesBetween[0],
             // Include the remaining newlines of the right sequence.
-            for (var i = 1; i < other._linesBetween.length; i++)
-                other._linesBetween[i],
+            for (var i = 1; i < other._linesBetween.length; i++) other._linesBetween[i],
         ];
 
         var comments = [..._comments, ...other._comments];
