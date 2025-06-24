@@ -154,20 +154,10 @@ final class ConstructorPiece extends Piece {
 
             if (state == _splitBeforeInitializers) {
                 writer.newline();
-
-                if (_hasOptionalParameter) {
-                    writer.pushIndent(Indent.initializerWithOptionalParameter);
-                } else {
-                    writer.pushIndent(Indent.initializer);
-                }
+                writer.pushIndent(Indent.initializer);
             } else {
                 writer.space();
-
-                if (_hasOptionalParameter && state == _splitBetweenInitializers) {
-                    writer.pushIndent(Indent.initializerWithOptionalParameter);
-                } else {
-                    writer.pushIndent(Indent.initializer);
-                }
+                writer.pushIndent(Indent.initializer);
             }
 
             writer.format(initializers);
