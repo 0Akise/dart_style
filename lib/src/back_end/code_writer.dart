@@ -63,6 +63,7 @@ class Indent {
     static Indent assignment(IndentConfig config) => Indent._(IndentType.assignment, config.spacesFor(IndentType.assignment));
     static Indent block(IndentConfig config) => Indent._(IndentType.block, config.spacesFor(IndentType.block));
     static Indent cascade(IndentConfig config) => Indent._(IndentType.cascade, config.spacesFor(IndentType.cascade));
+    /// add more
 }
 
 
@@ -150,7 +151,7 @@ final class CodeWriter {
   /// written.
   CodeWriter(
     this._pageWidth,
-    this._indentConfig
+    this._indentConfig,
     int leadingIndent,
     int subsequentIndent,
     this._cache,
@@ -580,55 +581,6 @@ enum Whitespace {
     newline || blankLine => true,
     _ => false,
   };
-}
-
-/// A kind of indentation that a [Piece] may output to control the leading
-/// whitespace at the beginning of a line.
-///
-/// Each indentation type defines the number of spaces it writes. Indentation
-/// is also semantic: a type describes *why* it writes that, or what kind of
-/// syntax its coming from. This allows us to merge or combine indentation in
-/// smarter ways in some contexts.
-enum Indent {
-  // No indentation.
-  none(0),
-
-  /// The right-hand side of an `=`, `:`, or `=>`.
-  assignment(4),
-
-  /// The contents of a block-like structure: block, collection literal,
-  /// argument list, etc.
-  block(2),
-
-  /// A split cascade chain.
-  cascade(2),
-
-  /// Indentation when splits occur inside for-in and if-case clause headers.
-  controlFlowClause(4),
-
-  /// Any general sort of split expression.
-  expression(4),
-
-  /// "Indentation" for parenthesized expressions and other contexts where we
-  /// want to prevent some inner expression's indentation from merging with
-  /// the surrounding one.
-  grouping(0),
-
-  /// An infix operator expression: `+`, `*`, `is`, etc.
-  infix(4),
-
-  /// Constructor initializer when the parameter list doesn't have optional
-  /// or named parameters.
-  initializer(2),
-
-  /// Constructor initializer when the parameter list does have optional or
-  /// named parameters.
-  initializerWithOptionalParameter(3);
-
-  /// The number of spaces this type of indentation applies.
-  final int spaces;
-
-  const Indent(this.spaces);
 }
 
 /// Information for each piece currently being formatted while [CodeWriter]
