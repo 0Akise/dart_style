@@ -3,7 +3,8 @@
 - Make it closer to C++
 
 simply speaking, disabling formatter configuration is ridiculous.
-mkakabaev made a fascinating tutorial of how-to-compile this dart project. [https://github.com/mkakabaev/dart_style?tab=readme-ov-file] please check it out.
+
+mkakabaev made a fascinating tutorial of how-to-compile this dart project. [mkakabaev/dart_style](https://github.com/mkakabaev/dart_style?tab=readme-ov-file) (also a fork) please check it out.
 
 ---
 
