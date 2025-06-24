@@ -6,6 +6,7 @@ import 'dart:math';
 import '../debug.dart' as debug;
 import '../piece/piece.dart';
 import '../profile.dart';
+import '../indent_config.dart';
 import 'code.dart';
 import 'solution.dart';
 import 'solution_cache.dart';
@@ -54,16 +55,55 @@ class IndentConfig {
     };
 }
 
-class Indent {
-    final IndentType type;
-    final int spaces;
-    
-    const Indent._(this.type, this.spaces);
-    static Indent none() => const Indent._(IndentType.none, 0);
-    static Indent assignment(IndentConfig config) => Indent._(IndentType.assignment, config.spacesFor(IndentType.assignment));
-    static Indent block(IndentConfig config) => Indent._(IndentType.block, config.spacesFor(IndentType.block));
-    static Indent cascade(IndentConfig config) => Indent._(IndentType.cascade, config.spacesFor(IndentType.cascade));
-    /// add more
+enum Indent {
+  // No indentation.
+  none,
+
+  /// The right-hand side of an `=`, `:`, or `=>`.
+  assignment,
+
+  /// The contents of a block-like structure: block, collection literal,
+  /// argument list, etc.
+  block,
+
+  /// A split cascade chain.
+  cascade,
+
+  /// Indentation when splits occur inside for-in and if-case clause headers.
+  controlFlowClause,
+
+  /// Any general sort of split expression.
+  expression,
+
+  /// "Indentation" for parenthesized expressions and other contexts where we
+  /// want to prevent some inner expression's indentation from merging with
+  /// the surrounding one.
+  grouping,
+
+  /// An infix operator expression: `+`, `*`, `is`, etc.
+  infix,
+
+  /// Constructor initializer when the parameter list doesn't have optional
+  /// or named parameters.
+  initializer,
+
+  /// Constructor initializer when the parameter list does have optional or
+  /// named parameters.
+  initializerWithOptionalParameter;
+
+  /// Get the actual spaces using global config for configurable values
+  int get spaces => switch (this) {
+    none => GlobalIndentConfig.none,
+    assignment => GlobalIndentConfig.assignment,
+    block => GlobalIndentConfig.block,
+    cascade => GlobalIndentConfig.cascade,
+    controlFlowClause => GlobalIndentConfig.controlFlowClause,
+    expression => GlobalIndentConfig.expression,
+    grouping => GlobalIndentConfig.grouping,
+    infix => GlobalIndentConfig.infix,
+    initializer => GlobalIndentConfig.initializer,
+    initializerWithOptionalParameter => GlobalIndentConfig.initializerWithOptionalParameter,
+  };
 }
 
 
@@ -149,20 +189,19 @@ final class CodeWriter {
   /// beginning of the first line and [subsequentIndent] is the indentation of
   /// each line after that, independent of indentation created by pieces being
   /// written.
-  CodeWriter(
-    this._pageWidth,
-    this._indentConfig,
-    int leadingIndent,
-    int subsequentIndent,
-    this._cache,
-    this._solution,
-  ) : _code = GroupCode(leadingIndent) {
+    CodeWriter(
+        this._pageWidth,
+        int leadingIndent,
+        int subsequentIndent,
+        this._cache,
+        this._solution,
+    ) : _code = GroupCode(leadingIndent) {
     _indentStack.add(_IndentLevel(Indent.none, leadingIndent));
 
     // Track the leading indent before the first line.
     _pendingIndent = leadingIndent;
     _column = _pendingIndent;
-
+  
     // If there is additional indentation on subsequent lines, then push that
     // onto the stack. When the first newline is written, [_pendingIndent] will
     // pick this up and use it for subsequent lines.
@@ -199,53 +238,39 @@ final class CodeWriter {
     }
   }
 
-  /// Increases the indentation by [indent] relative to the current amount of
-  /// indentation.
-  void pushIndent(IndentType indentType) {
-    var indent = Indent.fromType(indentType, _indentConfig);
-    if (_cache.isVersion37) {
-      _pushIndentV37(indent);
-    } else {
-      var parent = _indentStack.last;
+    /// Increases the indentation by [indent] relative to the current amount of
+    /// indentation.
+    void pushIndent(Indent indent) {
+        if (_cache.isVersion37) {
+            _pushIndentV37(indent);
+        } else {
+            var parent = _indentStack.last;
+            var offset = switch ((parent.type, indent)) {
+                (Indent.assignment, Indent.infix) => 0,
+                (Indent.controlFlowClause, Indent.expression) => 0,
+                (Indent.controlFlowClause, Indent.infix) => 0,
+                (_, _) => indent.spaces,
+            };
 
-      // Combine the new indentation with the surrounding one.
-      var offset = switch ((parent.type, indent)) {
-        // On the right-hand side of `=`, `:`, or `=>`, don't indent subsequent
-        // infix operands so that they all align:
-        //
-        //     variable =
-        //         operand +
-        //         another;
-        (Indent.assignment, Indent.infix) => 0,
-
-        // We have already indented the control flow header, so collapse the
-        // duplicate indentation.
-        (Indent.controlFlowClause, Indent.expression) => 0,
-        (Indent.controlFlowClause, Indent.infix) => 0,
-
-        // If we get here, the parent context has no effect, so just apply the
-        // indentation directly.
-        (_, _) => indent.spaces,
-      };
-
-      _indentStack.add(_IndentLevel(indent, parent.spaces + offset));
-      if (debug.traceIndent) {
-        debug.log('pushIndent: ${_indentStack.join(' ')}');
-      }
+            _indentStack.add(_IndentLevel(indent, parent.spaces + offset));
+      
+            if (debug.traceIndent) {
+                debug.log('pushIndent: ${_indentStack.join(' ')}');
+            }
+        }
     }
-  }
 
   /// Increases the indentation in a control flow clause in a "collapsible" way.
   ///
   /// This is only used in a couple of corners of if-case and for-in headers
   /// where the indentation is unusual.
-  void pushCollapsibleIndent() {
-    if (_cache.isVersion37) {
-      _pushIndentV37(Indent.expression, canCollapse: true);
-    } else {
-      pushIndent(Indent.controlFlowClause);
+    void pushCollapsibleIndent() {
+        if (_cache.isVersion37) {
+            _pushIndentV37(Indent.expression, canCollapse: true);
+        } else {
+            pushIndent(Indent.controlFlowClause);
+        }
     }
-  }
 
   /// The 3.7 style of indentation and collapsible indentation tracking.
   ///
@@ -625,25 +650,15 @@ enum ShapeMode {
   other,
 }
 
-/// A level of indentation in the indentation stack.
+
 final class _IndentLevel {
-  /// The reason this indentation was added.
-  ///
-  /// Not used for 3.7 style.
-  final Indent type;
-
-  /// The total number of spaces of indentation.
-  final int spaces;
-
-  /// How many spaces of [spaces] can be collapsed with further indentation.
-  ///
-  /// Only used for 3.7 style.
-  final int collapsible;
-
-  _IndentLevel.v37(this.spaces, this.collapsible) : type = Indent.none;
-
-  _IndentLevel(this.type, this.spaces) : collapsible = 0;
-
-  @override
-  String toString() => '${type.name}:$spaces';
+    final Indent type;
+    final int spaces;
+    final int collapsible;  
+    
+    _IndentLevel.v37(this.spaces, this.collapsible) : type = Indent.none;
+    _IndentLevel(this.type, this.spaces) : collapsible = 0; 
+    
+    @override
+    String toString() => '${type.name}:$spaces';
 }

@@ -199,13 +199,14 @@ Future<bool> _processFile(
   // find a configured one.
   pageWidth ??= DartFormatter.defaultPageWidth;
 
-  var formatter = DartFormatter(
-    languageVersion: languageVersion,
-    indent: options.indent,
-    pageWidth: pageWidth,
-    trailingCommas: trailingCommas,
-    experimentFlags: options.experimentFlags,
-  );
+    var formatter = DartFormatter(
+        languageVersion: languageVersion,
+        indent: options.indent,
+        indentSize: options.indentSize,
+        pageWidth: pageWidth,
+        trailingCommas: trailingCommas,
+        experimentFlags: options.experimentFlags,
+    );
 
   try {
     var source = SourceCode(file.readAsStringSync(), uri: file.path);

@@ -111,7 +111,7 @@ final class FormatCommand extends Command<int> {
 
     argParser.addOption(
         'indent-size',
-        help: 'Number of spaces per indentation level (block indent).',
+        help: 'Number of spaces per indentation level.',
         defaultsTo: '4',
         hide: !verbose,
     );
@@ -309,12 +309,14 @@ final class FormatCommand extends Command<int> {
     }
 
     var indentSize = int.tryParse(argResults['indent-size'] as String) ?? usageException(
-        '--indent-size must be an integer, was "${argResults['indent-size']}".'
+        '--indent-size must be an integer, was '
+        '"${argResults['indent-size']}".',
     );
 
     if (indentSize < 0) {
         usageException(
-            '--indent-size must be non-negative, was "$indentSize".'
+            '--indent-size must be non-negative, was '
+            '"$indentSize".',
         );
     }
 

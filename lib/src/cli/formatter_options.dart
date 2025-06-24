@@ -18,55 +18,31 @@ const dartStyleVersion = '3.1.0';
 /// Global options parsed from the command line that affect how the formatter
 /// produces and uses its outputs.
 final class FormatterOptions {
-  /// The language version formatted code should be parsed at or `null` if not
-  /// specified.
-  final Version? languageVersion;
+    final Version? languageVersion;
+    final int indent;
+    final int indentSize;
+    final int? pageWidth;
+    final TrailingCommas? trailingCommas;
+    final bool followLinks;
+    final Show show;
+    final Output output;
+    final Summary summary;
+    final bool setExitIfChanged;
+    final List<String> experimentFlags;
 
-  /// The number of spaces of indentation to prefix the output with.
-  final int indent;
-  final int indentSize;
-  /// The number of columns that formatted output should be constrained to fit
-  /// within or `null` if not specified.
-  ///
-  /// If omitted, the formatter defaults to a page width of
-  /// [DartFormatter.defaultPageWidth].
-  final int? pageWidth;
-
-  /// How trailing commas in the input source code affect formatting.
-  final TrailingCommas? trailingCommas;
-
-  /// Whether symlinks should be traversed when formatting a directory.
-  final bool followLinks;
-
-  /// Which affected files should be shown.
-  final Show show;
-
-  /// Where formatted code should be output.
-  final Output output;
-
-  final Summary summary;
-
-  /// Sets the exit code to 1 if any changes are made.
-  final bool setExitIfChanged;
-
-  /// Flags to enable experimental language features.
-  ///
-  /// See dart.dev/go/experiments for details.
-  final List<String> experimentFlags;
-
-  FormatterOptions({
-    this.languageVersion,
-    required this.indent = 0,
-    required this.indentSize = 4,
-    this.pageWidth,
-    this.trailingCommas,
-    this.followLinks = false,
-    this.show = Show.changed,
-    this.output = Output.write,
-    this.summary = Summary.none,
-    this.setExitIfChanged = false,
-    List<String>? experimentFlags,
-  }) : experimentFlags = [...?experimentFlags];
+    FormatterOptions({
+        this.languageVersion,
+        this.indent = 0,
+        this.indentSize = 4,
+        this.pageWidth,
+        this.trailingCommas,
+        required this.followLinks,
+        required this.show,
+        required this.output,
+        required this.summary,
+        required this.setExitIfChanged,
+        required this.experimentFlags,
+    });
 
   /// Called when [file] is about to be formatted.
   ///

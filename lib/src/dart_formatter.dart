@@ -15,6 +15,7 @@ import 'package:analyzer/src/string_source.dart';
 import 'package:pub_semver/pub_semver.dart';
 
 import 'exceptions.dart';
+import 'indent_config.dart';
 import 'front_end/ast_node_visitor.dart';
 import 'short/source_visitor.dart';
 import 'source_code.dart';
@@ -87,18 +88,21 @@ final class DartFormatter {
   ///
   /// If [indent] is given, that many levels of indentation will be prefixed
   /// before each resulting line in the output.
-  DartFormatter({
-    required this.languageVersion,
-    this.lineEnding,
-    int? pageWidth,
-    int? indent,
-    TrailingCommas? trailingCommas,
-    List<String>? experimentFlags,
-  }) : pageWidth = pageWidth ?? defaultPageWidth,
-       indent = indent ?? 0,
-       indentSize = indentSize ?? 4,
-       trailingCommas = trailingCommas ?? TrailingCommas.automate,
-       experimentFlags = [...?experimentFlags];
+    DartFormatter({
+        required this.languageVersion,
+        this.lineEnding,
+        int? pageWidth,
+        int? indent,
+        int? indentSize,
+        TrailingCommas? trailingCommas,
+        List<String>? experimentFlags,
+    }): pageWidth = pageWidth ?? defaultPageWidth,
+        indent = indent ?? 0,
+        indentSize = indentSize ?? 2,
+        trailingCommas = trailingCommas ?? TrailingCommas.automate,
+        experimentFlags = [...?experimentFlags] {
+            GlobalIndentConfig.setBlockSize(this.indentSize);
+        }
 
   /// Formats the given [source] string containing an entire Dart compilation
   /// unit.
