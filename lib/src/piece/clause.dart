@@ -83,8 +83,8 @@ final class ClausePiece extends Piece {
     ///     }
     final bool _allowLeadingClause;
 
-    ClausePiece(this._header, this._clauses, {bool allowLeadingClause = false})
-        : _allowLeadingClause = allowLeadingClause && _clauses.length > 1;
+    ClausePiece(this._header, this._clauses, {bool allowLeadingClause = false}):
+    _allowLeadingClause = allowLeadingClause && _clauses.length > 1;
 
     @override
     List<State> get additionalStates => [if (_allowLeadingClause) _betweenClauses, State.split];

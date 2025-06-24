@@ -81,9 +81,9 @@ final class ListPiece extends Piece {
         this._style, {
         required int lastNonCommentElement,
         required bool blockShaped,
-    }) : assert(_elements.isNotEmpty),
-             _lastNonCommentElement = lastNonCommentElement,
-             _isBlockShaped = blockShaped {
+    }): assert(_elements.isNotEmpty),
+        _lastNonCommentElement = lastNonCommentElement,
+        _isBlockShaped = blockShaped {
         // For most elements, we know whether or not it will have a comma based
         // only on the comma style and its position in the list, so pin those here.
         for (var i = 0; i < _elements.length; i++) {
@@ -330,11 +330,11 @@ final class ListElementPiece extends Piece {
     /// delimiter (here `,` and 2).
     int _commentsBeforeDelimiter = 0;
 
-    ListElementPiece(List<Piece> leadingComments, Piece element)
-        : _leadingComments = [...leadingComments],
-            _content = element;
+    ListElementPiece(List<Piece> leadingComments, Piece element):
+    _leadingComments = [...leadingComments],
+        _content = element;
 
-    ListElementPiece.comment(Piece comment) : _leadingComments = const [], _content = null {
+    ListElementPiece.comment(Piece comment): _leadingComments = const [], _content = null {
         _hangingComments.add(comment);
     }
 

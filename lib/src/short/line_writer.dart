@@ -42,11 +42,11 @@ final class LineWriter {
     /// The number of characters that have been written to the output.
     int get length => _buffer.length;
 
-    LineWriter(DartFormatter formatter, this._chunks)
-        : _lineEnding = formatter.lineEnding!,
-            pageWidth = formatter.pageWidth,
-            _blockIndentation = 0,
-            _blockCache = {};
+    LineWriter(DartFormatter formatter, this._chunks):
+    _lineEnding = formatter.lineEnding!,
+        pageWidth = formatter.pageWidth,
+        _blockIndentation = 0,
+        _blockCache = {};
 
     /// Creates a line writer for a block.
     LineWriter._(this._chunks, this._lineEnding, this.pageWidth, this._blockIndentation, this._blockCache);

@@ -58,9 +58,9 @@ final class CaseExpressionPiece extends Piece {
         required bool canBlockSplitPattern,
         required bool patternIsLogicalOr,
         bool canBlockSplitBody = true,
-    }) : _canBlockSplitPattern = canBlockSplitPattern,
-             _patternIsLogicalOr = patternIsLogicalOr,
-             _canBlockSplitBody = canBlockSplitBody;
+    }): _canBlockSplitPattern = canBlockSplitPattern,
+        _patternIsLogicalOr = patternIsLogicalOr,
+        _canBlockSplitBody = canBlockSplitBody;
 
     @override
     List<State> get additionalStates => [

@@ -193,8 +193,8 @@ final class EnableFormattingCommentPiece extends CommentPiece {
     /// before `//`.
     final int _sourceOffset;
 
-    EnableFormattingCommentPiece(this._sourceOffset, super._trailingWhitespace, {required bool enable})
-        : _enabled = enable;
+    EnableFormattingCommentPiece(this._sourceOffset, super._trailingWhitespace, {required bool enable}):
+    _enabled = enable;
 
     @override
     void format(CodeWriter writer, State state) {

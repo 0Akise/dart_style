@@ -86,7 +86,7 @@ base class Rule with FastHash {
     }
 
     /// Creates a new rule that is already fully split.
-    Rule.hard() : _cost = 0 {
+    Rule.hard(): _cost = 0 {
         Profile.count('Create Rule');
 
         // Set the cost to zero since it will always be applied, so there's no

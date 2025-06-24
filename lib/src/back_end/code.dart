@@ -141,7 +141,7 @@ final class _NewlineCode extends Code {
     /// The number of spaces of indentation after this newline.
     final int _indent;
 
-    _NewlineCode({required bool blank, required int indent}) : _indent = indent, _blank = blank;
+    _NewlineCode({required bool blank, required int indent}): _indent = indent, _blank = blank;
 }
 
 /// A [Code] object for literal source text.

@@ -79,7 +79,7 @@ final class _InfixPiece extends InfixPiece {
     /// Whether this piece is for a conditional expression.
     final bool _isConditional;
 
-    _InfixPiece(super.operands, super.indent, this._isConditional) : super._();
+    _InfixPiece(super.operands, super.indent, this._isConditional): super._();
 
     @override
     void format(CodeWriter writer, State state) {
@@ -125,7 +125,7 @@ final class _InfixPiece extends InfixPiece {
 
 /// [InfixPiece] subclass for 3.7 style.
 final class _InfixPieceV37 extends InfixPiece {
-    _InfixPieceV37(super.operands, super.indent) : super._();
+    _InfixPieceV37(super.operands, super.indent): super._();
 
     @override
     void format(CodeWriter writer, State state) {

@@ -93,7 +93,7 @@ final class SourceVisitor extends ThrowingAstVisitor {
 
     /// Initialize a newly created visitor to write source code representing
     /// the visited nodes to the given [writer].
-    SourceVisitor(DartFormatter formatter, this._lineInfo, this._source) : builder = ChunkBuilder(formatter, _source);
+    SourceVisitor(DartFormatter formatter, this._lineInfo, this._source): builder = ChunkBuilder(formatter, _source);
 
     /// Runs the visitor on [node], formatting its contents.
     ///

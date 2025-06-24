@@ -136,10 +136,10 @@ final class AssignPieceV37 extends Piece {
         bool canBlockSplitLeft = false,
         bool canBlockSplitRight = false,
         bool avoidBlockSplitRight = false,
-    }) : _left = left,
-             _canBlockSplitLeft = canBlockSplitLeft,
-             _canBlockSplitRight = canBlockSplitRight,
-             _avoidBlockSplitRight = avoidBlockSplitRight;
+    }): _left = left,
+        _canBlockSplitLeft = canBlockSplitLeft,
+        _canBlockSplitRight = canBlockSplitRight,
+        _avoidBlockSplitRight = avoidBlockSplitRight;
 
     @override
     List<State> get additionalStates => [

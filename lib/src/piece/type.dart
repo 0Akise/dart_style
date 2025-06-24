@@ -18,7 +18,7 @@ final class TypePiece extends Piece {
     /// What kind of body the type has.
     final TypeBodyType _bodyType;
 
-    TypePiece(this._header, this._body, {required TypeBodyType bodyType}) : _bodyType = bodyType;
+    TypePiece(this._header, this._body, {required TypeBodyType bodyType}): _bodyType = bodyType;
 
     @override
     List<State> get additionalStates => [if (_bodyType == TypeBodyType.list) State.split];

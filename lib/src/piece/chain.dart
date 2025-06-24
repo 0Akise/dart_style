@@ -166,12 +166,12 @@ abstract base class ChainPiece extends Piece {
         int leadingProperties = 0,
         int blockCallIndex = -1,
         Indent indent = Indent.expression,
-    }) : _leadingProperties = leadingProperties,
-             _blockCallIndex = blockCallIndex,
-             _indent = indent,
-             _isCascade = cascade,
-             // If there are no calls, we shouldn't have created a chain.
-             assert(_calls.isNotEmpty);
+    }): _leadingProperties = leadingProperties,
+        _blockCallIndex = blockCallIndex,
+        _indent = indent,
+        _isCascade = cascade,
+        // If there are no calls, we shouldn't have created a chain.
+        assert(_calls.isNotEmpty);
 
     @override
     List<State> get additionalStates => [
@@ -292,7 +292,7 @@ final class _ChainPiece extends ChainPiece {
         super.leadingProperties,
         super.blockCallIndex,
         super.indent,
-    }) : super._();
+    }): super._();
 
     @override
     int stateCost(State state) {
@@ -369,8 +369,8 @@ final class _ChainPieceV37 extends ChainPiece {
         super.blockCallIndex,
         super.indent,
         required bool allowSplitInTarget,
-    }) : _allowSplitInTarget = allowSplitInTarget,
-             super._();
+    }): _allowSplitInTarget = allowSplitInTarget,
+        super._();
 
     @override
     Set<Shape> allowedChildShapes(State state, Piece child) {

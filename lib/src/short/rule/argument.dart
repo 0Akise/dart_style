@@ -59,8 +59,8 @@ final class PositionalRule extends ArgumentRule {
         required int argumentCount,
         int leadingCollections = 0,
         int trailingCollections = 0,
-    }) : _leadingCollections = leadingCollections,
-             _trailingCollections = trailingCollections {
+    }): _leadingCollections = leadingCollections,
+        _trailingCollections = trailingCollections {
         // Don't split inside collections if there are leading collections and
         // we split before the first argument.
         if (leadingCollections > 0) {

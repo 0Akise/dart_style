@@ -52,9 +52,9 @@ final class VariablePiece extends Piece {
     ///
     /// The [hasType] parameter should be `true` if the variable declaration has
     /// a type annotation.
-    VariablePiece(this._header, this._variables, {required bool hasType, required bool version37})
-        : _hasType = hasType,
-            _isVersion37 = version37;
+    VariablePiece(this._header, this._variables, {required bool hasType, required bool version37}):
+    _hasType = hasType,
+        _isVersion37 = version37;
 
     @override
     List<State> get additionalStates => [if (_variables.length > 1) _betweenVariables, if (_hasType) _afterType];

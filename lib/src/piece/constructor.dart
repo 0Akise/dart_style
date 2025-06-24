@@ -89,11 +89,11 @@ final class ConstructorPiece extends Piece {
         Piece? redirect,
         Piece? initializerSeparator,
         Piece? initializers,
-    }) : _canSplitParameters = canSplitParameters,
-             _hasOptionalParameter = hasOptionalParameter,
-             _redirect = redirect,
-             _initializerSeparator = initializerSeparator,
-             _initializers = initializers;
+    }): _canSplitParameters = canSplitParameters,
+        _hasOptionalParameter = hasOptionalParameter,
+        _redirect = redirect,
+        _initializerSeparator = initializerSeparator,
+        _initializers = initializers;
 
     @override
     List<State> get additionalStates => [

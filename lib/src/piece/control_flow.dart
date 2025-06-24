@@ -14,7 +14,7 @@ final class ControlFlowPiece extends Piece {
 
     final List<_Section> _sections = [];
 
-    ControlFlowPiece({bool isStatement = true}) : _isStatement = isStatement;
+    ControlFlowPiece({bool isStatement = true}): _isStatement = isStatement;
 
     void add(Piece header, Piece statement, {required bool isBlock}) {
         _sections.add(_Section(header, statement, isBlock));

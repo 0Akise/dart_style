@@ -27,7 +27,7 @@ final class ForPiece extends Piece {
     ///         var element in list) { ... }
     final bool _indent;
 
-    ForPiece(this._forKeyword, this._parts, {required bool indent}) : _indent = indent;
+    ForPiece(this._forKeyword, this._parts, {required bool indent}): _indent = indent;
 
     @override
     void format(CodeWriter writer, State state) {
@@ -113,7 +113,7 @@ abstract base class ForInPiece extends Piece {
 
 /// A [ForInPiece] subclass for 3.8 and later style.
 final class _ForInPiece extends ForInPiece {
-    _ForInPiece(super._variable, super._sequence) : super._();
+    _ForInPiece(super._variable, super._sequence): super._();
 
     @override
     Set<Shape> allowedChildShapes(State state, Piece child) => switch (state) {
@@ -137,9 +137,9 @@ final class _ForInPieceV37 extends ForInPiece {
     ///     }
     final bool _canBlockSplitSequence;
 
-    _ForInPieceV37(super._variable, super._sequence, {bool canBlockSplitSequence = false})
-        : _canBlockSplitSequence = canBlockSplitSequence,
-            super._();
+    _ForInPieceV37(super._variable, super._sequence, {bool canBlockSplitSequence = false}):
+    _canBlockSplitSequence = canBlockSplitSequence,
+        super._();
 
     @override
     Set<Shape> allowedChildShapes(State state, Piece child) {

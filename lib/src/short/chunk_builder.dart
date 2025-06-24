@@ -102,7 +102,7 @@ final class ChunkBuilder {
     /// The current innermost rule.
     Rule get rule => _rules.last;
 
-    ChunkBuilder(this._formatter, this._source) : _parent = null, _chunks = [] {
+    ChunkBuilder(this._formatter, this._source): _parent = null, _chunks = [] {
         indent(_formatter.indent);
         startBlockArgumentNesting();
     }

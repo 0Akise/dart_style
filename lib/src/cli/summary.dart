@@ -54,7 +54,7 @@ final class _LineSummary extends Summary {
     /// The number of changed files.
     int _changed = 0;
 
-    _LineSummary() : super._();
+    _LineSummary(): super._();
 
     /// Describe the processed file at [path] whose formatted result is [output].
     ///
