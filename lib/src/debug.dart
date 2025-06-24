@@ -7,6 +7,7 @@ library;
 
 import 'dart:math' as math;
 
+import 'dart_formatter.dart';
 import 'piece/piece.dart';
 import 'short/chunk.dart';
 import 'short/line_splitting/rule_set.dart';
@@ -320,44 +321,44 @@ final class _PieceDebugTree {
         return result;
     }
 
-    void write(StringBuffer buffer, int indent) {
-        buffer.write(label);
-        if (children.isEmpty) return;
+void write(StringBuffer buffer, int indent) {
+    buffer.write(label);
+    if (children.isEmpty) return;
 
-        buffer.write('(');
+    buffer.write('(');
 
-        // Split the tree if it is too long.
-        var isSplit = indent * 2 + width > 80;
-        if (isSplit) {
-            indent++;
-            buffer.writeln();
-            buffer.write('  ' * indent);
-        }
-
-        var first = true;
-        for (var child in children) {
-            if (!first) {
-                if (isSplit) {
-                    buffer.writeln();
-                    buffer.write('  ' * indent);
-                } else {
-                    buffer.write(' ');
-                }
-            }
-
-            child.write(buffer, indent);
-
-            first = false;
-        }
-
-        if (isSplit) {
-            indent--;
-            buffer.writeln();
-            buffer.write('  ' * indent);
-        }
-
-        buffer.write(')');
+    // Split the tree if it is too long.
+    var isSplit = indent * 2 + width > DartFormatter.defaultPageWidth;
+    if (isSplit) {
+        indent++;
+        buffer.writeln();
+        buffer.write('  ' * indent);
     }
+
+    var first = true;
+    for (var child in children) {
+        if (!first) {
+            if (isSplit) {
+                buffer.writeln();
+                buffer.write('  ' * indent);
+            } else {
+                buffer.write(' ');
+            }
+        }
+
+        child.write(buffer, indent);
+
+        first = false;
+    }
+
+    if (isSplit) {
+        indent--;
+        buffer.writeln();
+        buffer.write('  ' * indent);
+    }
+
+    buffer.write(')');
+}
 }
 
 String _color(String ansiEscape) => useAnsiColors ? ansiEscape : '';

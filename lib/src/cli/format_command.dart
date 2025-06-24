@@ -97,7 +97,7 @@ final class FormatCommand extends Command<int> {
         argParser.addOption(
             'page-width',
             help: 'Try to keep lines no longer than this.',
-            defaultsTo: '80',
+            defaultsTo: '120',
             hide: !verbose,
         );
         // This is the old name for "--page-width". We keep it for backwards
@@ -106,7 +106,7 @@ final class FormatCommand extends Command<int> {
             'line-length',
             abbr: 'l',
             help: 'Wrap lines longer than this.',
-            defaultsTo: '80',
+            defaultsTo: '120',
             hide: true,
         );
 
