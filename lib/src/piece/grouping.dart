@@ -19,20 +19,20 @@ import 'piece.dart';
 ///         '${a +
 ///         b}';
 final class GroupingPiece extends Piece {
-  final Piece _content;
+    final Piece _content;
 
-  GroupingPiece(this._content);
+    GroupingPiece(this._content);
 
-  @override
-  void format(CodeWriter writer, State state) {
-    writer.pushIndent(Indent.grouping);
-    writer.setShapeMode(ShapeMode.other);
-    writer.format(_content);
-    writer.popIndent();
-  }
+    @override
+    void format(CodeWriter writer, State state) {
+        writer.pushIndent(Indent.grouping);
+        writer.setShapeMode(ShapeMode.other);
+        writer.format(_content);
+        writer.popIndent();
+    }
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    callback(_content);
-  }
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(_content);
+    }
 }

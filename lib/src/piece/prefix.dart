@@ -18,19 +18,19 @@ import 'piece.dart';
 ///         throw 'long adjacent string'
 ///         'more string';
 final class PrefixPiece extends Piece {
-  final Piece _content;
+    final Piece _content;
 
-  PrefixPiece(this._content);
+    PrefixPiece(this._content);
 
-  @override
-  void format(CodeWriter writer, State state) {
-    writer.pushIndent(Indent.grouping);
-    writer.format(_content);
-    writer.popIndent();
-  }
+    @override
+    void format(CodeWriter writer, State state) {
+        writer.pushIndent(Indent.grouping);
+        writer.format(_content);
+        writer.popIndent();
+    }
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    callback(_content);
-  }
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(_content);
+    }
 }

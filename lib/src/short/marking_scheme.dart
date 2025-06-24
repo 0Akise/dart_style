@@ -4,17 +4,17 @@
 
 /// A mixin for marking classes.
 mixin Markable {
-  bool _isMarked = false;
+    bool _isMarked = false;
 
-  bool mark() {
-    if (_isMarked) return false;
-    _isMarked = true;
-    return true;
-  }
+    bool mark() {
+        if (_isMarked) return false;
+        _isMarked = true;
+        return true;
+    }
 
-  bool get isMarked => _isMarked;
+    bool get isMarked => _isMarked;
 
-  void unmark() {
-    _isMarked = false;
-  }
+    void unmark() {
+        _isMarked = false;
+    }
 }

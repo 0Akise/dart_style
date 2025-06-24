@@ -48,140 +48,141 @@ import 'piece.dart';
 ///          second = 2;
 ///     //  ^ Five spaces of indentation.
 final class ConstructorPiece extends Piece {
-  static const _splitBeforeInitializers = State(1, cost: 1);
+    static const _splitBeforeInitializers = State(1, cost: 1);
 
-  static const _splitBetweenInitializers = State(2, cost: 2);
+    static const _splitBetweenInitializers = State(2, cost: 2);
 
-  /// Whether there are parameters or comments inside the parameter list.
-  ///
-  /// If so, then we allow splitting the parameter list while leaving the `:`
-  /// on the same line as the `)`.
-  final bool _canSplitParameters;
+    /// Whether there are parameters or comments inside the parameter list.
+    ///
+    /// If so, then we allow splitting the parameter list while leaving the `:`
+    /// on the same line as the `)`.
+    final bool _canSplitParameters;
 
-  /// Whether the parameter list contains a `]` or `}` closing delimiter before
-  /// the `)`.
-  final bool _hasOptionalParameter;
+    /// Whether the parameter list contains a `]` or `}` closing delimiter before
+    /// the `)`.
+    final bool _hasOptionalParameter;
 
-  /// The leading keywords, class name, and constructor name.
-  final Piece _header;
+    /// The leading keywords, class name, and constructor name.
+    final Piece _header;
 
-  /// The constructor parameter list.
-  final Piece _parameters;
+    /// The constructor parameter list.
+    final Piece _parameters;
 
-  /// If this is a redirecting constructor, the redirection clause.
-  final Piece? _redirect;
+    /// If this is a redirecting constructor, the redirection clause.
+    final Piece? _redirect;
 
-  /// If there are initializers, the `:` before them.
-  final Piece? _initializerSeparator;
+    /// If there are initializers, the `:` before them.
+    final Piece? _initializerSeparator;
 
-  /// The constructor initializers, if there are any.
-  final Piece? _initializers;
+    /// The constructor initializers, if there are any.
+    final Piece? _initializers;
 
-  /// The constructor body.
-  final Piece _body;
+    /// The constructor body.
+    final Piece _body;
 
-  ConstructorPiece(
-    this._header,
-    this._parameters,
-    this._body, {
-    required bool canSplitParameters,
-    required bool hasOptionalParameter,
-    Piece? redirect,
-    Piece? initializerSeparator,
-    Piece? initializers,
-  }) : _canSplitParameters = canSplitParameters,
-       _hasOptionalParameter = hasOptionalParameter,
-       _redirect = redirect,
-       _initializerSeparator = initializerSeparator,
-       _initializers = initializers;
+    ConstructorPiece(
+        this._header,
+        this._parameters,
+        this._body, {
+        required bool canSplitParameters,
+        required bool hasOptionalParameter,
+        Piece? redirect,
+        Piece? initializerSeparator,
+        Piece? initializers,
+    }) : _canSplitParameters = canSplitParameters,
+             _hasOptionalParameter = hasOptionalParameter,
+             _redirect = redirect,
+             _initializerSeparator = initializerSeparator,
+             _initializers = initializers;
 
-  @override
-  List<State> get additionalStates => [
-    if (_initializers != null) _splitBeforeInitializers,
-    if (_canSplitParameters && _initializers != null) _splitBetweenInitializers,
-  ];
+    @override
+    List<State> get additionalStates => [
+        if (_initializers != null) _splitBeforeInitializers,
+        if (_canSplitParameters && _initializers != null)
+            _splitBetweenInitializers,
+    ];
 
-  /// Apply constraints between how the parameters may split and how the
-  /// initializers may split.
-  @override
-  void applyConstraints(State state, Constrain constrain) {
-    // If there are no initializers, the parameters can do whatever.
-    if (_initializers case var initializers?) {
-      switch (state) {
-        case State.unsplit:
-          // All parameters and initializers on one line.
-          constrain(_parameters, State.unsplit);
-          constrain(initializers, State.unsplit);
+    /// Apply constraints between how the parameters may split and how the
+    /// initializers may split.
+    @override
+    void applyConstraints(State state, Constrain constrain) {
+        // If there are no initializers, the parameters can do whatever.
+        if (_initializers case var initializers?) {
+            switch (state) {
+                case State.unsplit:
+                    // All parameters and initializers on one line.
+                    constrain(_parameters, State.unsplit);
+                    constrain(initializers, State.unsplit);
 
-        case _splitBeforeInitializers:
-          // Only split before the `:` when the parameters fit on one line.
-          constrain(_parameters, State.unsplit);
-          constrain(initializers, State.split);
+                case _splitBeforeInitializers:
+                    // Only split before the `:` when the parameters fit on one line.
+                    constrain(_parameters, State.unsplit);
+                    constrain(initializers, State.split);
 
-        case _splitBetweenInitializers:
-          // Split both the parameters and initializers and put the `) :` on
-          // its own line.
-          constrain(_parameters, State.split);
-          constrain(initializers, State.split);
-      }
-    }
-  }
-
-  @override
-  Set<Shape> allowedChildShapes(State state, Piece child) {
-    if (child == _body) return Shape.all;
-
-    // If there's a newline in the header or parameters (like a line comment
-    // after the `)`), then don't allow the initializers to remain unsplit.
-    return Shape.anyIf(_initializers == null || state != State.unsplit);
-  }
-
-  @override
-  bool containsNewline(State state) =>
-      state == _splitBeforeInitializers || super.containsNewline(state);
-
-  @override
-  void format(CodeWriter writer, State state) {
-    writer.format(_header);
-    writer.format(_parameters);
-
-    if (_redirect case var redirect?) {
-      writer.space();
-      writer.format(redirect);
+                case _splitBetweenInitializers:
+                    // Split both the parameters and initializers and put the `) :` on
+                    // its own line.
+                    constrain(_parameters, State.split);
+                    constrain(initializers, State.split);
+            }
+        }
     }
 
-    if (_initializers case var initializers?) {
-      writer.pushIndent(Indent.block);
-      writer.splitIf(state == _splitBeforeInitializers);
+    @override
+    Set<Shape> allowedChildShapes(State state, Piece child) {
+        if (child == _body) return Shape.all;
 
-      writer.format(_initializerSeparator!);
-      writer.space();
-
-      // Indent subsequent initializers past the `:`.
-      if (_hasOptionalParameter && state == _splitBetweenInitializers) {
-        writer.pushIndent(Indent.initializerWithOptionalParameter);
-      } else {
-        writer.pushIndent(Indent.initializer);
-      }
-
-      writer.format(initializers);
-      writer.popIndent();
-      writer.popIndent();
+        // If there's a newline in the header or parameters (like a line comment
+        // after the `)`), then don't allow the initializers to remain unsplit.
+        return Shape.anyIf(_initializers == null || state != State.unsplit);
     }
 
-    writer.format(_body);
-  }
+    @override
+    bool containsNewline(State state) =>
+            state == _splitBeforeInitializers || super.containsNewline(state);
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    callback(_header);
-    callback(_parameters);
-    if (_redirect case var redirect?) callback(redirect);
-    if (_initializerSeparator case var separator?) callback(separator);
-    if (_initializers case var initializers?) callback(initializers);
-    callback(_body);
-  }
+    @override
+    void format(CodeWriter writer, State state) {
+        writer.format(_header);
+        writer.format(_parameters);
 
-  @override
-  String get debugName => 'Ctor';
+        if (_redirect case var redirect?) {
+            writer.space();
+            writer.format(redirect);
+        }
+
+        if (_initializers case var initializers?) {
+            writer.pushIndent(Indent.block);
+            writer.splitIf(state == _splitBeforeInitializers);
+
+            writer.format(_initializerSeparator!);
+            writer.space();
+
+            // Indent subsequent initializers past the `:`.
+            if (_hasOptionalParameter && state == _splitBetweenInitializers) {
+                writer.pushIndent(Indent.initializerWithOptionalParameter);
+            } else {
+                writer.pushIndent(Indent.initializer);
+            }
+
+            writer.format(initializers);
+            writer.popIndent();
+            writer.popIndent();
+        }
+
+        writer.format(_body);
+    }
+
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(_header);
+        callback(_parameters);
+        if (_redirect case var redirect?) callback(redirect);
+        if (_initializerSeparator case var separator?) callback(separator);
+        if (_initializers case var initializers?) callback(initializers);
+        callback(_body);
+    }
+
+    @override
+    String get debugName => 'Ctor';
 }

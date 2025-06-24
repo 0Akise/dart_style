@@ -23,40 +23,40 @@ import 'solver.dart';
 /// indentation. When that happens, sharing this cache allows us to reuse that
 /// cached subtree Solution.
 final class SolutionCache {
-  /// Whether this cache and all solutions in it use the 3.7 style solver.
-  final bool isVersion37;
+    /// Whether this cache and all solutions in it use the 3.7 style solver.
+    final bool isVersion37;
 
-  final _cache = <_Key, Solution>{};
+    final _cache = <_Key, Solution>{};
 
-  SolutionCache({required bool version37}) : isVersion37 = version37;
+    SolutionCache({required bool version37}) : isVersion37 = version37;
 
-  /// Returns a previously cached solution for formatting [root] with leading
-  /// [indent] (and [subsequentIndent] for lines after the first) or produces a
-  /// new solution, caches it, and returns it.
-  ///
-  /// If [root] is already bound to a state in the surrounding piece tree's
-  /// [Solution], then [stateIfBound] is that state. Otherwise, it is treated
-  /// as unbound and the cache will find a state for [root] as well as its
-  /// children.
-  Solution find(
-    Piece root,
-    State? stateIfBound, {
-    required int pageWidth,
-    required int indent,
-    required int subsequentIndent,
-  }) {
-    // See if we've already formatted this piece at this indentation. If not,
-    // format it and store the result.
-    return _cache.putIfAbsent(
-      (root, indent: indent, subsequentIndent: subsequentIndent),
-      () => Solver(
-        this,
-        pageWidth: pageWidth,
-        leadingIndent: indent,
-        subsequentIndent: subsequentIndent,
-      ).format(root, stateIfBound),
-    );
-  }
+    /// Returns a previously cached solution for formatting [root] with leading
+    /// [indent] (and [subsequentIndent] for lines after the first) or produces a
+    /// new solution, caches it, and returns it.
+    ///
+    /// If [root] is already bound to a state in the surrounding piece tree's
+    /// [Solution], then [stateIfBound] is that state. Otherwise, it is treated
+    /// as unbound and the cache will find a state for [root] as well as its
+    /// children.
+    Solution find(
+        Piece root,
+        State? stateIfBound, {
+        required int pageWidth,
+        required int indent,
+        required int subsequentIndent,
+    }) {
+        // See if we've already formatted this piece at this indentation. If not,
+        // format it and store the result.
+        return _cache.putIfAbsent(
+            (root, indent: indent, subsequentIndent: subsequentIndent),
+            () => Solver(
+                this,
+                pageWidth: pageWidth,
+                leadingIndent: indent,
+                subsequentIndent: subsequentIndent,
+            ).format(root, stateIfBound),
+        );
+    }
 }
 
 /// The key used to uniquely identify a previously formatted Piece.

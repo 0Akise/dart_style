@@ -8,63 +8,65 @@ import 'piece.dart';
 ///
 /// Used for class, enum, and extension declarations.
 final class TypePiece extends Piece {
-  /// The leading keywords and modifiers, type name, type parameters, and any
-  /// other `extends`, `with`, etc. clauses.
-  final Piece _header;
+    /// The leading keywords and modifiers, type name, type parameters, and any
+    /// other `extends`, `with`, etc. clauses.
+    final Piece _header;
 
-  /// The `native` clause, if any, and the type body.
-  final Piece _body;
+    /// The `native` clause, if any, and the type body.
+    final Piece _body;
 
-  /// What kind of body the type has.
-  final TypeBodyType _bodyType;
+    /// What kind of body the type has.
+    final TypeBodyType _bodyType;
 
-  TypePiece(this._header, this._body, {required TypeBodyType bodyType})
-    : _bodyType = bodyType;
+    TypePiece(this._header, this._body, {required TypeBodyType bodyType})
+        : _bodyType = bodyType;
 
-  @override
-  List<State> get additionalStates => [
-    if (_bodyType == TypeBodyType.list) State.split,
-  ];
+    @override
+    List<State> get additionalStates => [
+        if (_bodyType == TypeBodyType.list) State.split,
+    ];
 
-  @override
-  void applyConstraints(State state, Constrain constrain) {
-    // If the body may or may not split, force it to split when the header does.
-    if (state == State.split) constrain(_body, State.split);
-  }
+    @override
+    void applyConstraints(State state, Constrain constrain) {
+        // If the body may or may not split, force it to split when the header does.
+        if (state == State.split) constrain(_body, State.split);
+    }
 
-  @override
-  Set<Shape> allowedChildShapes(State state, Piece child) {
-    if (child == _body) return Shape.all;
+    @override
+    Set<Shape> allowedChildShapes(State state, Piece child) {
+        if (child == _body) return Shape.all;
 
-    // If the body may or may not split, then a newline in the header or
-    // clauses forces the body to split.
-    return Shape.anyIf(_bodyType != TypeBodyType.list || state == State.split);
-  }
+        // If the body may or may not split, then a newline in the header or
+        // clauses forces the body to split.
+        return Shape.anyIf(
+            _bodyType != TypeBodyType.list || state == State.split,
+        );
+    }
 
-  @override
-  void format(CodeWriter writer, State state) {
-    writer.format(_header);
-    if (_bodyType != TypeBodyType.semicolon) writer.space();
-    writer.format(_body);
-  }
+    @override
+    void format(CodeWriter writer, State state) {
+        writer.format(_header);
+        if (_bodyType != TypeBodyType.semicolon) writer.space();
+        writer.format(_body);
+    }
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    callback(_header);
-    callback(_body);
-  }
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(_header);
+        callback(_body);
+    }
 }
 
 /// What kind of body is used for the type.
 enum TypeBodyType {
-  /// An always-split block body, as in a class declaration.
-  block,
+    /// An always-split block body, as in a class declaration.
+    block,
 
-  /// A curly-brace delimited list that may or may not split.
-  ///
-  /// Used for enums with constants but no members.
-  list,
+    /// A curly-brace delimited list that may or may not split.
+    ///
+    /// Used for enums with constants but no members.
+    list,
 
-  /// A single `;` body, used for mixin application classes.
-  semicolon,
+    /// A single `;` body, used for mixin application classes.
+    semicolon,
 }

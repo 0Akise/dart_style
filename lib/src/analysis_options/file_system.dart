@@ -7,30 +7,30 @@
 /// Implement this if you want to control how this package locates and reads
 /// files.
 abstract interface class FileSystem {
-  /// Returns `true` if there is a file at [path].
-  Future<bool> fileExists(covariant FileSystemPath path);
+    /// Returns `true` if there is a file at [path].
+    Future<bool> fileExists(covariant FileSystemPath path);
 
-  /// Joins [from] and [to] into a single path with appropriate path separators.
-  ///
-  /// Note that [to] may be an absolute path implementation of [join()] should
-  /// be prepared to handle that by ignoring [from].
-  Future<FileSystemPath> join(covariant FileSystemPath from, String to);
+    /// Joins [from] and [to] into a single path with appropriate path separators.
+    ///
+    /// Note that [to] may be an absolute path implementation of [join()] should
+    /// be prepared to handle that by ignoring [from].
+    Future<FileSystemPath> join(covariant FileSystemPath from, String to);
 
-  /// Returns a path for the directory containing [path].
-  ///
-  /// If [path] is a root path, then returns `null`.
-  Future<FileSystemPath?> parentDirectory(covariant FileSystemPath path);
+    /// Returns a path for the directory containing [path].
+    ///
+    /// If [path] is a root path, then returns `null`.
+    Future<FileSystemPath?> parentDirectory(covariant FileSystemPath path);
 
-  /// Returns the series of directories surrounding [path], from innermost out.
-  ///
-  /// If [path] is itself a directory, then it should be the first directory
-  /// yielded by this. Otherwise, the stream should begin with the directory
-  /// containing that file.
-  // Stream<FileSystemPath> parentDirectories(FileSystemPath path);
+    /// Returns the series of directories surrounding [path], from innermost out.
+    ///
+    /// If [path] is itself a directory, then it should be the first directory
+    /// yielded by this. Otherwise, the stream should begin with the directory
+    /// containing that file.
+    // Stream<FileSystemPath> parentDirectories(FileSystemPath path);
 
-  /// Reads the contents of the file as [path], which should exist and contain
-  /// UTF-8 encoded text.
-  Future<String> readFile(covariant FileSystemPath path);
+    /// Reads the contents of the file as [path], which should exist and contain
+    /// UTF-8 encoded text.
+    Future<String> readFile(covariant FileSystemPath path);
 }
 
 /// Abstraction over a file or directory in a [FileSystem].

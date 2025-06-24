@@ -62,96 +62,99 @@ import 'piece.dart';
 ///         longOperand +
 ///             anotherOperand;
 final class AssignPiece extends Piece {
-  /// Allow the right-hand side to block split.
-  static const State _blockOrHeadlineSplitRight = State(1, cost: 0);
+    /// Allow the right-hand side to block split.
+    static const State _blockOrHeadlineSplitRight = State(1, cost: 0);
 
-  /// Force the left-hand side to block split and allow the right-hand side to
-  /// split.
-  static const State _blockSplitLeft = State(2);
+    /// Force the left-hand side to block split and allow the right-hand side to
+    /// split.
+    static const State _blockSplitLeft = State(2);
 
-  /// The left-hand side of the operation and the operator itself.
-  final Piece _left;
+    /// The left-hand side of the operation and the operator itself.
+    final Piece _left;
 
-  /// The right-hand side of the operation.
-  final Piece _right;
+    /// The right-hand side of the operation.
+    final Piece _right;
 
-  /// Whether the piece should have a cost for splitting at the operator.
-  ///
-  /// Usually true because it's generally better to block split inside the
-  /// operands when possible. But false for `=>` when the expression has a form
-  /// where we'd rather keep the expression itself unsplit as in:
-  ///
-  ///     // Don't avoid split:
-  ///     makeStuff() => [
-  ///       element,
-  ///       element,
-  ///     ];
-  ///
-  ///     // Avoid split:
-  ///     doThing() =>
-  ///       thingToDo(argument, argument);
-  final bool _avoidSplit;
+    /// Whether the piece should have a cost for splitting at the operator.
+    ///
+    /// Usually true because it's generally better to block split inside the
+    /// operands when possible. But false for `=>` when the expression has a form
+    /// where we'd rather keep the expression itself unsplit as in:
+    ///
+    ///     // Don't avoid split:
+    ///     makeStuff() => [
+    ///       element,
+    ///       element,
+    ///     ];
+    ///
+    ///     // Avoid split:
+    ///     doThing() =>
+    ///       thingToDo(argument, argument);
+    final bool _avoidSplit;
 
-  AssignPiece(this._left, this._right, {bool avoidSplit = true})
-    : _avoidSplit = avoidSplit;
+    AssignPiece(this._left, this._right, {bool avoidSplit = true})
+        : _avoidSplit = avoidSplit;
 
-  @override
-  List<State> get additionalStates => [
-    _blockOrHeadlineSplitRight,
-    _blockSplitLeft,
-    State.split,
-  ];
+    @override
+    List<State> get additionalStates => [
+        _blockOrHeadlineSplitRight,
+        _blockSplitLeft,
+        State.split,
+    ];
 
-  @override
-  int stateCost(State state) => switch (state) {
-    State.split => _avoidSplit ? 1 : 0,
-    _ => super.stateCost(state),
-  };
-
-  @override
-  Set<Shape> allowedChildShapes(State state, Piece child) {
-    return switch (state) {
-      State.unsplit => Shape.onlyInline,
-      _blockSplitLeft when child == _left => Shape.onlyBlock,
-      _blockSplitLeft when child == _right => const {Shape.inline, Shape.other},
-      _blockOrHeadlineSplitRight when child == _right => const {
-        Shape.block,
-        Shape.headline,
-      },
-      _ => Shape.all,
+    @override
+    int stateCost(State state) => switch (state) {
+        State.split => _avoidSplit ? 1 : 0,
+        _ => super.stateCost(state),
     };
-  }
 
-  @override
-  void format(CodeWriter writer, State state) {
-    if (state == State.split) {
-      // When splitting at the operator, indent the operands.
-      writer.pushIndent(Indent.expression);
-
-      // Treat a split `=` as potentially headline-shaped if the LHS doesn't
-      // split. Allows:
-      //
-      //     variable = another =
-      //         'split at second "="';
-      writer.setShapeMode(ShapeMode.beforeHeadline);
-      writer.format(_left);
-      writer.setShapeMode(ShapeMode.afterHeadline);
-
-      writer.newline();
-      writer.popIndent();
-      writer.pushIndent(Indent.assignment);
-      writer.format(_right);
-      writer.popIndent();
-    } else {
-      writer.format(_left);
-      writer.space();
-      writer.format(_right);
+    @override
+    Set<Shape> allowedChildShapes(State state, Piece child) {
+        return switch (state) {
+            State.unsplit => Shape.onlyInline,
+            _blockSplitLeft when child == _left => Shape.onlyBlock,
+            _blockSplitLeft when child == _right => const {
+                Shape.inline,
+                Shape.other,
+            },
+            _blockOrHeadlineSplitRight when child == _right => const {
+                Shape.block,
+                Shape.headline,
+            },
+            _ => Shape.all,
+        };
     }
-  }
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    callback(_left);
-    callback(_right);
-  }
+    @override
+    void format(CodeWriter writer, State state) {
+        if (state == State.split) {
+            // When splitting at the operator, indent the operands.
+            writer.pushIndent(Indent.expression);
+
+            // Treat a split `=` as potentially headline-shaped if the LHS doesn't
+            // split. Allows:
+            //
+            //     variable = another =
+            //         'split at second "="';
+            writer.setShapeMode(ShapeMode.beforeHeadline);
+            writer.format(_left);
+            writer.setShapeMode(ShapeMode.afterHeadline);
+
+            writer.newline();
+            writer.popIndent();
+            writer.pushIndent(Indent.assignment);
+            writer.format(_right);
+            writer.popIndent();
+        } else {
+            writer.format(_left);
+            writer.space();
+            writer.format(_right);
+        }
+    }
+
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(_left);
+        callback(_right);
+    }
 }

@@ -10,43 +10,43 @@ import 'piece.dart';
 ///
 /// Constructed using a [SequenceBuilder].
 final class SequencePiece extends Piece {
-  /// The series of members or statements.
-  final List<SequenceElementPiece> _elements;
+    /// The series of members or statements.
+    final List<SequenceElementPiece> _elements;
 
-  SequencePiece(this._elements);
+    SequencePiece(this._elements);
 
-  @override
-  void format(CodeWriter writer, State state) {
-    writer.pushIndent(Indent.none);
+    @override
+    void format(CodeWriter writer, State state) {
+        writer.pushIndent(Indent.none);
 
-    for (var i = 0; i < _elements.length; i++) {
-      var element = _elements[i];
+        for (var i = 0; i < _elements.length; i++) {
+            var element = _elements[i];
 
-      writer.format(element, separate: true);
+            writer.format(element, separate: true);
 
-      if (i < _elements.length - 1) {
+            if (i < _elements.length - 1) {
+                writer.popIndent();
+                writer.pushIndent(_elements[i + 1]._indent);
+                writer.newline(blank: element.blankAfter);
+            }
+        }
+
         writer.popIndent();
-        writer.pushIndent(_elements[i + 1]._indent);
-        writer.newline(blank: element.blankAfter);
-      }
     }
 
-    writer.popIndent();
-  }
-
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    for (var element in _elements) {
-      callback(element);
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        for (var element in _elements) {
+            callback(element);
+        }
     }
-  }
 
-  /// If there are multiple elements, there are newlines between them.
-  @override
-  bool calculateContainsHardNewline() => _elements.length > 1;
+    /// If there are multiple elements, there are newlines between them.
+    @override
+    bool calculateContainsHardNewline() => _elements.length > 1;
 
-  @override
-  String get debugName => 'Seq';
+    @override
+    String get debugName => 'Seq';
 }
 
 /// A piece for a non-empty brace-delimited series of statements or members
@@ -56,82 +56,82 @@ final class SequencePiece extends Piece {
 ///
 /// Constructed using a [SequenceBuilder].
 final class BlockPiece extends Piece {
-  /// The opening delimiter.
-  final Piece _leftBracket;
+    /// The opening delimiter.
+    final Piece _leftBracket;
 
-  /// The series of members or statements.
-  final SequencePiece _elements;
+    /// The series of members or statements.
+    final SequencePiece _elements;
 
-  /// The closing delimiter.
-  final Piece _rightBracket;
+    /// The closing delimiter.
+    final Piece _rightBracket;
 
-  BlockPiece(this._leftBracket, this._elements, this._rightBracket);
+    BlockPiece(this._leftBracket, this._elements, this._rightBracket);
 
-  @override
-  void format(CodeWriter writer, State state) {
-    writer.format(_leftBracket);
-    writer.pushIndent(Indent.block);
-    writer.setShapeMode(ShapeMode.block);
-    writer.newline();
-    writer.format(_elements);
-    writer.popIndent();
-    writer.newline();
-    writer.setShapeMode(ShapeMode.merge);
-    writer.format(_rightBracket);
-  }
+    @override
+    void format(CodeWriter writer, State state) {
+        writer.format(_leftBracket);
+        writer.pushIndent(Indent.block);
+        writer.setShapeMode(ShapeMode.block);
+        writer.newline();
+        writer.format(_elements);
+        writer.popIndent();
+        writer.newline();
+        writer.setShapeMode(ShapeMode.merge);
+        writer.format(_rightBracket);
+    }
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    callback(_leftBracket);
-    callback(_elements);
-    callback(_rightBracket);
-  }
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(_leftBracket);
+        callback(_elements);
+        callback(_rightBracket);
+    }
 
-  /// A [BlockPiece] is never empty and always splits between the delimiters.
-  @override
-  bool calculateContainsHardNewline() => true;
+    /// A [BlockPiece] is never empty and always splits between the delimiters.
+    @override
+    bool calculateContainsHardNewline() => true;
 
-  @override
-  String get debugName => 'Block';
+    @override
+    String get debugName => 'Block';
 }
 
 /// An element inside a [SequencePiece].
 ///
 /// Tracks the underlying [Piece] along with surrounding whitespace.
 final class SequenceElementPiece extends Piece {
-  /// The indentation on the line before this element, relative to the
-  /// surrounding [Piece].
-  final Indent _indent;
+    /// The indentation on the line before this element, relative to the
+    /// surrounding [Piece].
+    final Indent _indent;
 
-  /// The [Piece] for the element.
-  final Piece piece;
+    /// The [Piece] for the element.
+    final Piece piece;
 
-  /// The comments that should appear at the end of this element's line.
-  final List<Piece> hangingComments = [];
+    /// The comments that should appear at the end of this element's line.
+    final List<Piece> hangingComments = [];
 
-  /// Whether there should be a blank line after this element.
-  bool blankAfter = false;
+    /// Whether there should be a blank line after this element.
+    bool blankAfter = false;
 
-  SequenceElementPiece(this._indent, this.piece);
+    SequenceElementPiece(this._indent, this.piece);
 
-  @override
-  void format(CodeWriter writer, State state) {
-    writer.format(piece);
+    @override
+    void format(CodeWriter writer, State state) {
+        writer.format(piece);
 
-    for (var comment in hangingComments) {
-      writer.space();
-      writer.format(comment);
+        for (var comment in hangingComments) {
+            writer.space();
+            writer.format(comment);
+        }
     }
-  }
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    callback(piece);
-    for (var comment in hangingComments) {
-      callback(comment);
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(piece);
+        for (var comment in hangingComments) {
+            callback(comment);
+        }
     }
-  }
 
-  @override
-  String get debugName => 'SeqElem';
+    @override
+    String get debugName => 'SeqElem';
 }

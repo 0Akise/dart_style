@@ -24,30 +24,30 @@ import 'piece.dart';
 ///         a +
 ///             b;
 final class LeadingCommentPiece extends Piece {
-  final List<Piece> _comments;
-  final Piece _piece;
+    final List<Piece> _comments;
+    final Piece _piece;
 
-  LeadingCommentPiece(this._comments, this._piece);
+    LeadingCommentPiece(this._comments, this._piece);
 
-  @override
-  void format(CodeWriter writer, State state) {
-    // If a piece has a leading comment, that comment should not also be a
-    // hanging comment, so ensure it begins its own line. This is also important
-    // to ensure that formatting is idempotent: If we don't do this, a comment
-    // might be a leading comment in the input and then get output on the same
-    // line as some preceding code, which would lead it to be a hanging comment
-    // the next time the formatter runs.
-    writer.newline();
-    for (var comment in _comments) {
-      writer.format(comment);
+    @override
+    void format(CodeWriter writer, State state) {
+        // If a piece has a leading comment, that comment should not also be a
+        // hanging comment, so ensure it begins its own line. This is also important
+        // to ensure that formatting is idempotent: If we don't do this, a comment
+        // might be a leading comment in the input and then get output on the same
+        // line as some preceding code, which would lead it to be a hanging comment
+        // the next time the formatter runs.
+        writer.newline();
+        for (var comment in _comments) {
+            writer.format(comment);
+        }
+
+        writer.format(_piece);
     }
 
-    writer.format(_piece);
-  }
-
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    _comments.forEach(callback);
-    callback(_piece);
-  }
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        _comments.forEach(callback);
+        callback(_piece);
+    }
 }

@@ -6,19 +6,19 @@ import 'piece.dart';
 
 /// A simple piece that just writes its child pieces one after the other.
 final class AdjacentPiece extends Piece {
-  final List<Piece> pieces;
+    final List<Piece> pieces;
 
-  AdjacentPiece(this.pieces);
+    AdjacentPiece(this.pieces);
 
-  @override
-  void format(CodeWriter writer, State state) {
-    for (var piece in pieces) {
-      writer.format(piece);
+    @override
+    void format(CodeWriter writer, State state) {
+        for (var piece in pieces) {
+            writer.format(piece);
+        }
     }
-  }
 
-  @override
-  void forEachChild(void Function(Piece piece) callback) {
-    pieces.forEach(callback);
-  }
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        pieces.forEach(callback);
+    }
 }

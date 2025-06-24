@@ -31,147 +31,147 @@ import 'selection.dart';
 /// A split controls the leading spacing of the line before the chunk's text,
 /// both block-based [indent] and expression-wrapping-based [nesting].
 final class Chunk extends Selection {
-  /// The literal text output for the chunk.
-  @override
-  String get text => _text;
-  String _text;
+    /// The literal text output for the chunk.
+    @override
+    String get text => _text;
+    String _text;
 
-  /// The number of characters of indentation from the left edge of the block
-  /// that contains this chunk.
-  ///
-  /// For top level chunks that are not inside any block, this also includes
-  /// leading indentation.
-  final int indent;
+    /// The number of characters of indentation from the left edge of the block
+    /// that contains this chunk.
+    ///
+    /// For top level chunks that are not inside any block, this also includes
+    /// leading indentation.
+    final int indent;
 
-  /// The expression nesting level preceding this chunk.
-  ///
-  /// This is used to determine how much to increase the indentation when a
-  /// line starts at this chunk. A single statement may be indented multiple
-  /// times if the splits occur in more deeply nested expressions, for example:
-  ///
-  ///     // 40 columns                           |
-  ///     someFunctionName(argument, argument,
-  ///         argument, anotherFunction(argument,
-  ///             argument));
-  final NestingLevel nesting;
+    /// The expression nesting level preceding this chunk.
+    ///
+    /// This is used to determine how much to increase the indentation when a
+    /// line starts at this chunk. A single statement may be indented multiple
+    /// times if the splits occur in more deeply nested expressions, for example:
+    ///
+    ///     // 40 columns                           |
+    ///     someFunctionName(argument, argument,
+    ///         argument, anotherFunction(argument,
+    ///             argument));
+    final NestingLevel nesting;
 
-  /// The [Rule] that controls when a split should occur before this chunk.
-  ///
-  /// Multiple splits may share a [Rule].
-  final Rule rule;
+    /// The [Rule] that controls when a split should occur before this chunk.
+    ///
+    /// Multiple splits may share a [Rule].
+    final Rule rule;
 
-  /// Whether or not an extra blank line should be output before this chunk if
-  /// it splits.
-  bool get isDouble => _isDouble;
-  bool _isDouble;
+    /// Whether or not an extra blank line should be output before this chunk if
+    /// it splits.
+    bool get isDouble => _isDouble;
+    bool _isDouble;
 
-  /// If `true`, then the line beginning with this chunk should always be at
-  /// column zero regardless of any indentation or expression nesting.
-  ///
-  /// Used for multi-line strings and commented out code.
-  bool get flushLeft => _flushLeft;
-  bool _flushLeft;
+    /// If `true`, then the line beginning with this chunk should always be at
+    /// column zero regardless of any indentation or expression nesting.
+    ///
+    /// Used for multi-line strings and commented out code.
+    bool get flushLeft => _flushLeft;
+    bool _flushLeft;
 
-  /// Whether this chunk should prepend an extra space if it does not split.
-  ///
-  /// This is `true`, for example, in a chunk following a ",".
-  bool get spaceWhenUnsplit => _spaceWhenUnsplit;
-  bool _spaceWhenUnsplit;
+    /// Whether this chunk should prepend an extra space if it does not split.
+    ///
+    /// This is `true`, for example, in a chunk following a ",".
+    bool get spaceWhenUnsplit => _spaceWhenUnsplit;
+    bool _spaceWhenUnsplit;
 
-  /// Whether this chunk marks the end of a range of chunks that can be line
-  /// split independently of the following chunks.
-  bool get canDivide => _canDivide;
-  bool _canDivide = true;
+    /// Whether this chunk marks the end of a range of chunks that can be line
+    /// split independently of the following chunks.
+    bool get canDivide => _canDivide;
+    bool _canDivide = true;
 
-  /// The number of characters in this chunk when unsplit.
-  int get length => (_spaceWhenUnsplit ? 1 : 0) + _text.length;
+    /// The number of characters in this chunk when unsplit.
+    int get length => (_spaceWhenUnsplit ? 1 : 0) + _text.length;
 
-  /// The unsplit length of all of this chunk's block contents.
-  ///
-  /// Does not include this chunk's own length, just the length of its child
-  /// block chunks (recursively).
-  int get unsplitBlockLength => 0;
+    /// The unsplit length of all of this chunk's block contents.
+    ///
+    /// Does not include this chunk's own length, just the length of its child
+    /// block chunks (recursively).
+    int get unsplitBlockLength => 0;
 
-  /// The [Span]s that contain this chunk.
-  final spans = <Span>[];
+    /// The [Span]s that contain this chunk.
+    final spans = <Span>[];
 
-  /// Creates a new empty chunk with the given split properties.
-  Chunk(
-    this.rule,
-    this.indent,
-    this.nesting, {
-    required bool space,
-    required bool flushLeft,
-    required bool isDouble,
-  }) : _text = '',
-       _flushLeft = flushLeft,
-       _isDouble = isDouble,
-       _spaceWhenUnsplit = space {
-    Profile.count('Create Chunk');
-  }
+    /// Creates a new empty chunk with the given split properties.
+    Chunk(
+        this.rule,
+        this.indent,
+        this.nesting, {
+        required bool space,
+        required bool flushLeft,
+        required bool isDouble,
+    }) : _text = '',
+             _flushLeft = flushLeft,
+             _isDouble = isDouble,
+             _spaceWhenUnsplit = space {
+        Profile.count('Create Chunk');
+    }
 
-  /// Creates a dummy chunk.
-  ///
-  /// This is returned in some places by [ChunkBuilder] when there is no useful
-  /// chunk to yield and it will not end up being used by the caller anyway.
-  Chunk.dummy()
-    : _text = '(dummy)',
-      rule = Rule.dummy,
-      indent = 0,
-      nesting = NestingLevel(),
-      _spaceWhenUnsplit = false,
-      _flushLeft = false,
-      _isDouble = false {
-    Profile.count('Create Chunk');
-  }
+    /// Creates a dummy chunk.
+    ///
+    /// This is returned in some places by [ChunkBuilder] when there is no useful
+    /// chunk to yield and it will not end up being used by the caller anyway.
+    Chunk.dummy()
+        : _text = '(dummy)',
+            rule = Rule.dummy,
+            indent = 0,
+            nesting = NestingLevel(),
+            _spaceWhenUnsplit = false,
+            _flushLeft = false,
+            _isDouble = false {
+        Profile.count('Create Chunk');
+    }
 
-  /// Append [text] to the end of the chunk's text.
-  void appendText(String text) {
-    _text += text;
-  }
+    /// Append [text] to the end of the chunk's text.
+    void appendText(String text) {
+        _text += text;
+    }
 
-  /// Updates the split information for a previously created chunk in response
-  /// to a split from a comment.
-  void updateSplit({bool? flushLeft, bool isDouble = false, bool? space}) {
-    assert(text.isEmpty);
+    /// Updates the split information for a previously created chunk in response
+    /// to a split from a comment.
+    void updateSplit({bool? flushLeft, bool isDouble = false, bool? space}) {
+        assert(text.isEmpty);
 
-    if (flushLeft != null) _flushLeft = flushLeft;
+        if (flushLeft != null) _flushLeft = flushLeft;
 
-    // Don't discard an already known blank newline, but do potentially add one.
-    if (isDouble) _isDouble = true;
+        // Don't discard an already known blank newline, but do potentially add one.
+        if (isDouble) _isDouble = true;
 
-    if (space != null) _spaceWhenUnsplit = space;
-  }
+        if (space != null) _spaceWhenUnsplit = space;
+    }
 
-  /// Returns `true` if this chunk is a block whose children should be
-  /// expression indented given a set of rule values provided by [getValue].
-  ///
-  /// [getValue] takes a [Rule] and returns the chosen split state value for
-  /// that [Rule].
-  bool indentBlock(int Function(Rule) getValue) => false;
+    /// Returns `true` if this chunk is a block whose children should be
+    /// expression indented given a set of rule values provided by [getValue].
+    ///
+    /// [getValue] takes a [Rule] and returns the chosen split state value for
+    /// that [Rule].
+    bool indentBlock(int Function(Rule) getValue) => false;
 
-  /// Prevent the line splitter from diving at this chunk.
-  ///
-  /// This should be called on any chunk where line splitting choices before
-  /// and after this chunk relate to each other.
-  void preventDivide() {
-    _canDivide = false;
-  }
+    /// Prevent the line splitter from diving at this chunk.
+    ///
+    /// This should be called on any chunk where line splitting choices before
+    /// and after this chunk relate to each other.
+    void preventDivide() {
+        _canDivide = false;
+    }
 
-  @override
-  String toString() {
-    var parts = [
-      'indent:$indent',
-      if (spaceWhenUnsplit) 'space',
-      if (isDouble) 'double',
-      if (flushLeft) 'flush',
-      '$rule${rule.isHardened ? '!' : ''}',
-      if (rule.constrainedRules.isNotEmpty)
-        "-> ${rule.constrainedRules.join(' ')}",
-    ];
+    @override
+    String toString() {
+        var parts = [
+            'indent:$indent',
+            if (spaceWhenUnsplit) 'space',
+            if (isDouble) 'double',
+            if (flushLeft) 'flush',
+            '$rule${rule.isHardened ? '!' : ''}',
+            if (rule.constrainedRules.isNotEmpty)
+                "-> ${rule.constrainedRules.join(' ')}",
+        ];
 
-    return '[${parts.join(' ')}] `$text`';
-  }
+        return '[${parts.join(' ')}] `$text`';
+    }
 }
 
 /// A [Chunk] containing a list of nested "child" chunks that are formatted
@@ -201,68 +201,68 @@ final class Chunk extends Selection {
 ///      |  '- (text)      "];"
 ///      '- (text)       "}"
 final class BlockChunk extends Chunk {
-  /// If this block is for a collection literal in an argument list, this will
-  /// be the chunk preceding this literal argument.
-  ///
-  /// That chunk is owned by the argument list and if it splits, this collection
-  /// may need extra expression-level indentation.
-  final Chunk? argument;
+    /// If this block is for a collection literal in an argument list, this will
+    /// be the chunk preceding this literal argument.
+    ///
+    /// That chunk is owned by the argument list and if it splits, this collection
+    /// may need extra expression-level indentation.
+    final Chunk? argument;
 
-  /// The child chunks in this block.
-  final List<Chunk> children = [];
+    /// The child chunks in this block.
+    final List<Chunk> children = [];
 
-  BlockChunk(
-    this.argument,
-    super.rule,
-    super.indent,
-    super.nesting, {
-    required super.space,
-    required super.flushLeft,
-  }) : super(isDouble: false);
+    BlockChunk(
+        this.argument,
+        super.rule,
+        super.indent,
+        super.nesting, {
+        required super.space,
+        required super.flushLeft,
+    }) : super(isDouble: false);
 
-  /// The unsplit length of all of this chunk's block contents.
-  ///
-  /// Does not include this chunk's own length, just the length of its child
-  /// block chunks (recursively).
-  @override
-  int get unsplitBlockLength {
-    var length = 0;
-    for (var chunk in children) {
-      length += chunk.length + chunk.unsplitBlockLength;
+    /// The unsplit length of all of this chunk's block contents.
+    ///
+    /// Does not include this chunk's own length, just the length of its child
+    /// block chunks (recursively).
+    @override
+    int get unsplitBlockLength {
+        var length = 0;
+        for (var chunk in children) {
+            length += chunk.length + chunk.unsplitBlockLength;
+        }
+
+        return length;
     }
 
-    return length;
-  }
+    @override
+    bool indentBlock(int Function(Rule) getValue) {
+        var argument = this.argument;
+        if (argument == null) return false;
 
-  @override
-  bool indentBlock(int Function(Rule) getValue) {
-    var argument = this.argument;
-    if (argument == null) return false;
+        // There may be no rule if the block occurs inside a string interpolation.
+        // In that case, it's not clear if anything will look particularly nice, but
+        // expression nesting is probably marginally better.
+        var rule = argument.rule;
+        if (rule == Rule.dummy) return true;
 
-    // There may be no rule if the block occurs inside a string interpolation.
-    // In that case, it's not clear if anything will look particularly nice, but
-    // expression nesting is probably marginally better.
-    var rule = argument.rule;
-    if (rule == Rule.dummy) return true;
-
-    return rule.isSplit(getValue(rule), argument);
-  }
+        return rule.isSplit(getValue(rule), argument);
+    }
 }
 
 /// The in-progress state for a [Span] that has been started but has not yet
 /// been completed.
 final class OpenSpan {
-  /// Index of the first chunk contained in this span.
-  final int start;
+    /// Index of the first chunk contained in this span.
+    final int start;
 
-  /// The cost applied when the span is split across multiple lines or `null`
-  /// if the span is for a multisplit.
-  final int cost;
+    /// The cost applied when the span is split across multiple lines or `null`
+    /// if the span is for a multisplit.
+    final int cost;
 
-  OpenSpan(this.start, this.cost);
+    OpenSpan(this.start, this.cost);
 
-  @override
-  String toString() => 'OpenSpan($start, \$$cost)';
+    @override
+    String toString() => 'OpenSpan($start, \$$cost)';
 }
 
 /// Delimits a range of chunks that must end up on the same line to avoid an
@@ -279,12 +279,12 @@ final class OpenSpan {
 /// unmarked when the algorithm finishes to make marking work in subsequent
 /// calls.
 final class Span with FastHash, Markable {
-  /// The cost applied when the span is split across multiple lines or `null`
-  /// if the span is for a multisplit.
-  final int cost;
+    /// The cost applied when the span is split across multiple lines or `null`
+    /// if the span is for a multisplit.
+    final int cost;
 
-  Span(this.cost);
+    Span(this.cost);
 
-  @override
-  String toString() => '$id\$$cost';
+    @override
+    String toString() => '$id\$$cost';
 }
