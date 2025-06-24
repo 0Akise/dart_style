@@ -98,7 +98,7 @@ final class DartFormatter {
         List<String>? experimentFlags,
     }) : pageWidth = pageWidth ?? defaultPageWidth,
              indent = indent ?? 0,
-             indentSize = indentSize ?? 2,
+             indentSize = indentSize ?? 4,
              trailingCommas = trailingCommas ?? TrailingCommas.automate,
              experimentFlags = [...?experimentFlags] {
         GlobalIndentConfig.setBlockSize(this.indentSize);

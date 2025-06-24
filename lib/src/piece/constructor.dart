@@ -151,23 +151,26 @@ final class ConstructorPiece extends Piece {
 
         if (_initializers case var initializers?) {
             writer.format(_initializerSeparator!);
-    
+
             if (state == _splitBeforeInitializers) {
                 writer.newline();
-                writer.pushIndent(Indent.block);
+
+                if (_hasOptionalParameter) {
+                    writer.pushIndent(Indent.initializerWithOptionalParameter);
+                } else {
+                    writer.pushIndent(Indent.initializer);
+                }
             } else {
                 writer.space();
-                writer.pushIndent(Indent.block);
-            }
 
-            if (_hasOptionalParameter && state == _splitBetweenInitializers) {
-                writer.pushIndent(Indent.initializerWithOptionalParameter);
-            } else {
-                writer.pushIndent(Indent.initializer);
+                if (_hasOptionalParameter && state == _splitBetweenInitializers) {
+                    writer.pushIndent(Indent.initializerWithOptionalParameter);
+                } else {
+                    writer.pushIndent(Indent.initializer);
+                }
             }
 
             writer.format(initializers);
-            writer.popIndent();
             writer.popIndent();
         }
 
