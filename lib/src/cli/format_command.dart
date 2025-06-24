@@ -110,6 +110,13 @@ final class FormatCommand extends Command<int> {
     );
 
     argParser.addOption(
+        'indent-size',
+        help: 'Number of spaces per indentation level (block indent).',
+        defaultsTo: '4',
+        hide: !verbose,
+    );
+
+    argParser.addOption(
       'trailing-commas',
       help: 'How trailing commas in input affect formatting.',
       defaultsTo: 'automate',
@@ -301,6 +308,16 @@ final class FormatCommand extends Command<int> {
       );
     }
 
+    var indentSize = int.tryParse(argResults['indent-size'] as String) ?? usageException(
+        '--indent-size must be an integer, was "${argResults['indent-size']}".'
+    );
+
+    if (indentSize < 0) {
+        usageException(
+            '--indent-size must be non-negative, was "$indentSize".'
+        );
+    }
+
     List<int>? selection;
     try {
       selection = _parseSelection(argResults, 'selection');
@@ -331,6 +348,7 @@ final class FormatCommand extends Command<int> {
     var options = FormatterOptions(
       languageVersion: languageVersion,
       indent: indent,
+      indentSize: indentSize,
       pageWidth: pageWidth,
       trailingCommas: trailingCommas,
       followLinks: followLinks,

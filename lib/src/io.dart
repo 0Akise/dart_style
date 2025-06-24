@@ -65,6 +65,7 @@ Future<void> formatStdin(
     var formatter = DartFormatter(
       languageVersion: languageVersion!,
       indent: options.indent,
+      indentSize: options.indentSize,
       pageWidth: pageWidth,
       trailingCommas: trailingCommas,
       experimentFlags: options.experimentFlags,

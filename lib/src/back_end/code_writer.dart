@@ -21,8 +21,54 @@ import 'solution_cache.dart';
 /// an instance of this class. It has methods that the piece can call to add
 /// output text to the resulting code, recursively format child pieces, insert
 /// whitespace, etc.
+
+enum IndentType {
+    none,
+    assignment,
+    block,
+    cascade,
+    controlFlowClause,
+    expression,
+    grouping,
+    infix,
+    initializer,
+    initializerWithOptionalParameter,
+}
+
+class IndentConfig {
+    final int blockSize;
+    
+    const IndentConfig({this.blockSize = 2});
+    
+    int spacesFor(IndentType type) => switch (type) {
+        IndentType.none => 0,
+        IndentType.assignment => blockSize * 2,
+        IndentType.block => blockSize,
+        IndentType.cascade => blockSize,
+        IndentType.controlFlowClause => blockSize * 2,
+        IndentType.expression => blockSize * 2,
+        IndentType.grouping => 0,
+        IndentType.infix => blockSize * 2,
+        IndentType.initializer => blockSize,
+        IndentType.initializerWithOptionalParameter => blockSize + 1,
+    };
+}
+
+class Indent {
+    final IndentType type;
+    final int spaces;
+    
+    const Indent._(this.type, this.spaces);
+    static Indent none() => const Indent._(IndentType.none, 0);
+    static Indent assignment(IndentConfig config) => Indent._(IndentType.assignment, config.spacesFor(IndentType.assignment));
+    static Indent block(IndentConfig config) => Indent._(IndentType.block, config.spacesFor(IndentType.block));
+    static Indent cascade(IndentConfig config) => Indent._(IndentType.cascade, config.spacesFor(IndentType.cascade));
+}
+
+
 final class CodeWriter {
-  final int _pageWidth;
+    final IndentConfig _indentConfig;
+    final int _pageWidth;
 
   /// Previously cached formatted subtrees.
   final SolutionCache _cache;
@@ -104,6 +150,7 @@ final class CodeWriter {
   /// written.
   CodeWriter(
     this._pageWidth,
+    this._indentConfig
     int leadingIndent,
     int subsequentIndent,
     this._cache,
@@ -153,7 +200,8 @@ final class CodeWriter {
 
   /// Increases the indentation by [indent] relative to the current amount of
   /// indentation.
-  void pushIndent(Indent indent) {
+  void pushIndent(IndentType indentType) {
+    var indent = Indent.fromType(indentType, _indentConfig);
     if (_cache.isVersion37) {
       _pushIndentV37(indent);
     } else {

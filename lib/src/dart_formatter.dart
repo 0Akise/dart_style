@@ -65,6 +65,8 @@ final class DartFormatter {
   /// The number of characters of indentation to prefix the output lines with.
   final int indent;
 
+  final int indentSize;
+
   /// How trailing commas in various constructs should affect formatting.
   ///
   /// The default is [TrailingCommas.automate] where the formatter is free to
@@ -94,6 +96,7 @@ final class DartFormatter {
     List<String>? experimentFlags,
   }) : pageWidth = pageWidth ?? defaultPageWidth,
        indent = indent ?? 0,
+       indentSize = indentSize ?? 4,
        trailingCommas = trailingCommas ?? TrailingCommas.automate,
        experimentFlags = [...?experimentFlags];
 

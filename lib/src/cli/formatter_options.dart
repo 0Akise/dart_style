@@ -24,7 +24,7 @@ final class FormatterOptions {
 
   /// The number of spaces of indentation to prefix the output with.
   final int indent;
-
+  final int indentSize;
   /// The number of columns that formatted output should be constrained to fit
   /// within or `null` if not specified.
   ///
@@ -56,7 +56,8 @@ final class FormatterOptions {
 
   FormatterOptions({
     this.languageVersion,
-    this.indent = 0,
+    required this.indent = 0,
+    required this.indentSize = 4,
     this.pageWidth,
     this.trailingCommas,
     this.followLinks = false,
