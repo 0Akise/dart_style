@@ -23,37 +23,6 @@ import 'solution_cache.dart';
 /// output text to the resulting code, recursively format child pieces, insert
 /// whitespace, etc.
 
-enum IndentType {
-    none,
-    assignment,
-    block,
-    cascade,
-    controlFlowClause,
-    expression,
-    grouping,
-    infix,
-    initializer,
-    initializerWithOptionalParameter,
-}
-
-class IndentConfig {
-    final int blockSize;
-    
-    const IndentConfig({this.blockSize = 2});
-    
-    int spacesFor(IndentType type) => switch (type) {
-        IndentType.none => 0,
-        IndentType.assignment => blockSize * 2,
-        IndentType.block => blockSize,
-        IndentType.cascade => blockSize,
-        IndentType.controlFlowClause => blockSize * 2,
-        IndentType.expression => blockSize * 2,
-        IndentType.grouping => 0,
-        IndentType.infix => blockSize * 2,
-        IndentType.initializer => blockSize,
-        IndentType.initializerWithOptionalParameter => blockSize + 1,
-    };
-}
 
 enum Indent {
   // No indentation.
@@ -108,7 +77,6 @@ enum Indent {
 
 
 final class CodeWriter {
-    final IndentConfig _indentConfig;
     final int _pageWidth;
 
   /// Previously cached formatted subtrees.
