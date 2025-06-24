@@ -1,4 +1,4 @@
-# What is this fork for
+# What this fork is for
 - to make dart use 4-spaces indentation
 - Make it closer to C++
 
