@@ -150,13 +150,16 @@ final class ConstructorPiece extends Piece {
         }
 
         if (_initializers case var initializers?) {
-            writer.pushIndent(Indent.block);
-            writer.splitIf(state == _splitBeforeInitializers);
-
             writer.format(_initializerSeparator!);
-            writer.space();
+    
+            if (state == _splitBeforeInitializers) {
+                writer.newline();
+                writer.pushIndent(Indent.block);
+            } else {
+                writer.space();
+                writer.pushIndent(Indent.block);
+            }
 
-            // Indent subsequent initializers past the `:`.
             if (_hasOptionalParameter && state == _splitBetweenInitializers) {
                 writer.pushIndent(Indent.initializerWithOptionalParameter);
             } else {
