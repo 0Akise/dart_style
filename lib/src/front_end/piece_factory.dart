@@ -147,7 +147,7 @@ mixin PieceFactory {
         builder.leftBracket(leftBracket);
         builder.visitAll(arguments, allowBlockArgument: true);
         builder.rightBracket(rightBracket);
-        var argumentsPiece = builder.build(forceSplit: true);
+        var argumentsPiece = builder.build(forceSplit: hasPreservedTrailingComma(rightBracket));
 
         // If the call is complex enough, force it to split even if it would fit.
         if (_contents.endCall(arguments)) {
