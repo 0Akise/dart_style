@@ -463,6 +463,10 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
 
             var parameters = nodePiece(node.parameters);
 
+            if (node.parameters.parameters.isNotEmpty) {
+                parameters.pin(State.split);
+            }
+
             Piece? redirect;
             Piece? initializerSeparator;
             Piece? initializers;
@@ -827,7 +831,12 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
         }
 
         builder.rightBracket(node.rightParenthesis, delimiter: node.rightDelimiter);
-        pieces.add(builder.build(forceSplit: true, blockShaped: false));
+        pieces.add(
+            builder.build(
+                forceSplit: hasPreservedTrailingComma(node.rightDelimiter ?? node.rightParenthesis),
+                blockShaped: false,
+            ),
+        );
     }
 
     @override
