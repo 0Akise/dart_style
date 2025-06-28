@@ -616,7 +616,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
                     builder.leftBracket(node.leftBracket);
                     node.constants.forEach(builder.visit);
                     builder.rightBracket(semicolon: node.semicolon, node.rightBracket);
-                    return builder.build(forceSplit: hasPreservedTrailingComma(node.semicolon ?? node.rightBracket));
+                    return builder.build(forceSplit: true);
                 } else {
                     // If there are members, format it like a block where each constant
                     // and member is on its own line.
@@ -827,12 +827,7 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
         }
 
         builder.rightBracket(node.rightParenthesis, delimiter: node.rightDelimiter);
-        pieces.add(
-            builder.build(
-                forceSplit: hasPreservedTrailingComma(node.rightDelimiter ?? node.rightParenthesis),
-                blockShaped: false,
-            ),
-        );
+        pieces.add(builder.build(forceSplit: true, blockShaped: false));
     }
 
     @override
@@ -1661,10 +1656,9 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
         var positionalFields = node.positionalFields;
 
         // Single positional record types always have a trailing comma.
-        var listStyle =
-                positionalFields.length == 1 && namedFields == null
-                        ? const ListStyle(commas: Commas.alwaysTrailing)
-                        : const ListStyle(commas: Commas.trailing);
+        var listStyle = positionalFields.length == 1 && namedFields == null
+                ? const ListStyle(commas: Commas.alwaysTrailing)
+                : const ListStyle(commas: Commas.trailing);
         var builder = DelimitedListBuilder(this, listStyle);
 
         // If all parameters are optional, put the `{` right after `(`.

@@ -1,5 +1,6 @@
 # https://dart.dev/guides/libraries/private-files
 .dart_tool/
+.vscode/
 pubspec.lock
 
 # Don't commit the baseline file since it's used for local performance

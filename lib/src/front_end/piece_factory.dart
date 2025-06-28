@@ -147,7 +147,7 @@ mixin PieceFactory {
         builder.leftBracket(leftBracket);
         builder.visitAll(arguments, allowBlockArgument: true);
         builder.rightBracket(rightBracket);
-        var argumentsPiece = builder.build(forceSplit: hasPreservedTrailingComma(rightBracket));
+        var argumentsPiece = builder.build(forceSplit: true);
 
         // If the call is complex enough, force it to split even if it would fit.
         if (_contents.endCall(arguments)) {
@@ -759,8 +759,9 @@ mixin PieceFactory {
                 pieces.token(question);
             }
 
-            var returnTypeModifiers =
-                    parameter != null ? [parameter.requiredKeyword, parameter.covariantKeyword] : const <Token?>[];
+            var returnTypeModifiers = parameter != null
+                    ? [parameter.requiredKeyword, parameter.covariantKeyword]
+                    : const <Token?>[];
 
             // If the type is a function-typed parameter with a default value, then
             // grab the default value from the parent node and attach it to the
