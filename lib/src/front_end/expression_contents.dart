@@ -67,7 +67,26 @@ class ExpressionContents {
     /// Ends the most recently begun call and returns `true` if its argument list
     /// should eagerly split.
     bool endCall(List<Expression> arguments) {
-        var contents = _end();
+        // var contents = _end();
+
+        var totalArgumentCount = arguments.length;
+        var namedArgumentCount = 0;
+
+        for (var argument in arguments) {
+            if (argument is NamedExpression) {
+                namedArgumentCount++;
+            }
+        }
+
+        if (totalArgumentCount <= 2) {
+            return false;
+        }
+
+        if (namedArgumentCount == 0) {
+            return false;
+        }
+
+        return true;
 
         // If there are "too many" named arguments in this call and the calls it
         // contains, then split it.
@@ -91,7 +110,7 @@ class ExpressionContents {
         // common code like this to split:
         //
         //       Text('Item 1', style: TextStyle(color: Colors.white));
-        return contents.totalNamedArguments > 2 && contents.namedArguments > 0 && contents.nestedNamedArguments > 0;
+        //       return contents.totalNamedArguments > 2 && contents.namedArguments > 0 && contents.nestedNamedArguments > 0;
     }
 
     /// Begin tracking a collection literal and its contents.
