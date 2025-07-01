@@ -78,7 +78,7 @@ class ExpressionContents {
             }
         }
 
-        if (totalArgumentCount <= 2) {
+        if (totalArgumentCount < 2) {
             return false;
         }
 
