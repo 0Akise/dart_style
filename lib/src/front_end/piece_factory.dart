@@ -759,9 +759,8 @@ mixin PieceFactory {
                 pieces.token(question);
             }
 
-            var returnTypeModifiers = parameter != null
-                    ? [parameter.requiredKeyword, parameter.covariantKeyword]
-                    : const <Token?>[];
+            var returnTypeModifiers =
+                    parameter != null ? [parameter.requiredKeyword, parameter.covariantKeyword] : const <Token?>[];
 
             // If the type is a function-typed parameter with a default value, then
             // grab the default value from the parent node and attach it to the
@@ -1735,7 +1734,10 @@ final class _ForcesSplitAssignPiece extends Piece {
     final Piece _left;
     final Piece _right;
 
-    _ForcesSplitAssignPiece(this._left, this._right);
+    _ForcesSplitAssignPiece(
+        this._left,
+        this._right,
+    );
 
     @override
     void format(CodeWriter writer, State state) {

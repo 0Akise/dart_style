@@ -46,7 +46,10 @@ final class NestingLevel with FastHash, Markable {
 
     NestingLevel(): parent = null, indent = 0;
 
-    NestingLevel._(this.parent, this.indent);
+    NestingLevel._(
+        this.parent,
+        this.indent,
+    );
 
     /// Creates a new deeper level of nesting indented [spaces] more characters
     /// that the outer level.

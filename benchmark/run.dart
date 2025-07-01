@@ -182,15 +182,27 @@ double _runTrial(DartFormatter formatter, ParseStringResult parseResult, SourceC
 
 Future<List<Benchmark>> _parseArguments(List<String> arguments) async {
     var argParser = ArgParser();
-    argParser.addFlag('help', negatable: false, help: 'Show usage information.');
-    argParser.addFlag('aot', negatable: false, help: 'Whether the benchmark should run in AOT mode versus JIT.');
+    argParser.addFlag(
+        'help',
+        negatable: false,
+        help: 'Show usage information.',
+    );
+    argParser.addFlag(
+        'aot',
+        negatable: false,
+        help: 'Whether the benchmark should run in AOT mode versus JIT.',
+    );
     argParser.addFlag(
         'short',
         abbr: 's',
         negatable: false,
         help: 'Whether the formatter should use short or tall style.',
     );
-    argParser.addFlag('no-warmup', negatable: false, help: 'Skip the JIT warmup runs.');
+    argParser.addFlag(
+        'no-warmup',
+        negatable: false,
+        help: 'Skip the JIT warmup runs.',
+    );
     argParser.addFlag(
         'write-baseline',
         abbr: 'w',
@@ -200,7 +212,10 @@ Future<List<Benchmark>> _parseArguments(List<String> arguments) async {
 
     var argResults = argParser.parse(arguments);
     if (argResults['help'] as bool) {
-        _usage(argParser, exitCode: 0);
+        _usage(
+            argParser,
+            exitCode: 0,
+        );
     }
 
     if (argResults['aot'] as bool) {
@@ -221,7 +236,10 @@ Future<List<Benchmark>> _parseArguments(List<String> arguments) async {
         // The user-specified list of paths.
         [...var paths] when paths.isNotEmpty => [for (var path in paths) Benchmark.read(path)],
 
-        _ => _usage(argParser, exitCode: 64),
+        _ => _usage(
+            argParser,
+            exitCode: 64,
+        ),
     };
 
     _runWarmupTrials = !(argResults['no-warmup'] as bool);

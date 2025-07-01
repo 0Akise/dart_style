@@ -27,7 +27,10 @@ final class FormatCommand extends Command<int> {
     @override
     final String category;
 
-    FormatCommand({bool verbose = false, this.category = ''}) {
+    FormatCommand({
+        bool verbose = false,
+        this.category = '',
+    }) {
         argParser.addFlag('verbose', abbr: 'v', negatable: false, help: 'Show all options and flags with --help.');
 
         if (verbose) argParser.addSeparator('Output options:');

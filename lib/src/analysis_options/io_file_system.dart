@@ -41,5 +41,7 @@ final class IOFileSystemPath implements FileSystemPath {
     /// The underlying physical file system path.
     final String path;
 
-    IOFileSystemPath._(this.path);
+    IOFileSystemPath._(
+        this.path,
+    );
 }

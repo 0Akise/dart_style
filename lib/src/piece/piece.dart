@@ -275,7 +275,10 @@ final class State implements Comparable<State> {
     /// How much a solution is penalized when this state is chosen.
     final int cost;
 
-    const State(this._value, {this.cost = 1});
+    const State(
+        this._value, {
+        this.cost = 1,
+    });
 
     @override
     int compareTo(State other) => _value.compareTo(other._value);

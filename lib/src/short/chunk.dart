@@ -96,8 +96,14 @@ final class Chunk extends Selection {
     final spans = <Span>[];
 
     /// Creates a new empty chunk with the given split properties.
-    Chunk(this.rule, this.indent, this.nesting, {required bool space, required bool flushLeft, required bool isDouble}):
-    _text = '',
+    Chunk(
+        this.rule,
+        this.indent,
+        this.nesting, {
+        required bool space,
+        required bool flushLeft,
+        required bool isDouble,
+    }): _text = '',
         _flushLeft = flushLeft,
         _isDouble = isDouble,
         _spaceWhenUnsplit = space {
@@ -252,7 +258,10 @@ final class OpenSpan {
     /// if the span is for a multisplit.
     final int cost;
 
-    OpenSpan(this.start, this.cost);
+    OpenSpan(
+        this.start,
+        this.cost,
+    );
 
     @override
     String toString() => 'OpenSpan($start, \$$cost)';
@@ -276,7 +285,9 @@ final class Span with FastHash, Markable {
     /// if the span is for a multisplit.
     final int cost;
 
-    Span(this.cost);
+    Span(
+        this.cost,
+    );
 
     @override
     String toString() => '$id\$$cost';

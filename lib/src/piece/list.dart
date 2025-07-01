@@ -330,11 +330,16 @@ final class ListElementPiece extends Piece {
     /// delimiter (here `,` and 2).
     int _commentsBeforeDelimiter = 0;
 
-    ListElementPiece(List<Piece> leadingComments, Piece element):
-    _leadingComments = [...leadingComments],
+    ListElementPiece(
+        List<Piece> leadingComments,
+        Piece element,
+    ): _leadingComments = [...leadingComments],
         _content = element;
 
-    ListElementPiece.comment(Piece comment): _leadingComments = const [], _content = null {
+    ListElementPiece.comment(
+        Piece comment,
+    ): _leadingComments = const [],
+        _content = null {
         _hangingComments.add(comment);
     }
 
@@ -482,5 +487,9 @@ final class ListStyle {
     ///     //              ^                      ^
     final bool spaceWhenUnsplit;
 
-    const ListStyle({this.commas = Commas.trailing, this.splitCost = Cost.normal, this.spaceWhenUnsplit = false});
+    const ListStyle({
+        this.commas = Commas.trailing,
+        this.splitCost = Cost.normal,
+        this.spaceWhenUnsplit = false,
+    });
 }

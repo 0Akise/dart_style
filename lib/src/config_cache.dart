@@ -209,5 +209,8 @@ final class _FormatterOptions {
     /// the options file doesn't specify it.
     final TrailingCommas? trailingCommas;
 
-    _FormatterOptions(this.pageWidth, this.trailingCommas);
+    _FormatterOptions(
+        this.pageWidth,
+        this.trailingCommas,
+    );
 }

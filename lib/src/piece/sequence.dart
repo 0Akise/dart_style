@@ -13,7 +13,9 @@ final class SequencePiece extends Piece {
     /// The series of members or statements.
     final List<SequenceElementPiece> _elements;
 
-    SequencePiece(this._elements);
+    SequencePiece(
+        this._elements,
+    );
 
     @override
     void format(CodeWriter writer, State state) {
@@ -65,7 +67,11 @@ final class BlockPiece extends Piece {
     /// The closing delimiter.
     final Piece _rightBracket;
 
-    BlockPiece(this._leftBracket, this._elements, this._rightBracket);
+    BlockPiece(
+        this._leftBracket,
+        this._elements,
+        this._rightBracket,
+    );
 
     @override
     void format(CodeWriter writer, State state) {
@@ -112,7 +118,10 @@ final class SequenceElementPiece extends Piece {
     /// Whether there should be a blank line after this element.
     bool blankAfter = false;
 
-    SequenceElementPiece(this._indent, this.piece);
+    SequenceElementPiece(
+        this._indent,
+        this.piece,
+    );
 
     @override
     void format(CodeWriter writer, State state) {

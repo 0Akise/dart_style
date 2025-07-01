@@ -53,7 +53,10 @@ final class ArgumentListVisitor {
     // where it shouldn't.
     bool get hasBlockArguments => _arguments._blocks.isNotEmpty || _functions != null;
 
-    factory ArgumentListVisitor(SourceVisitor visitor, ArgumentList node) {
+    factory ArgumentListVisitor(
+        SourceVisitor visitor,
+        ArgumentList node,
+    ) {
         return ArgumentListVisitor.forArguments(visitor, node.leftParenthesis, node.rightParenthesis, node.arguments);
     }
 
@@ -334,7 +337,10 @@ final class ArgumentSublist {
     Chunk? get previousSplit => _previousSplit;
     Chunk? _previousSplit;
 
-    factory ArgumentSublist(List<Expression> allArguments, List<Expression> arguments) {
+    factory ArgumentSublist(
+        List<Expression> allArguments,
+        List<Expression> arguments,
+    ) {
         var argumentLists = _splitArgumentLists(arguments);
         var positional = argumentLists[0];
         var named = argumentLists[1];

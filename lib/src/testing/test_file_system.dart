@@ -13,7 +13,9 @@ import '../analysis_options/file_system.dart';
 final class TestFileSystem implements FileSystem {
     final Map<String, String> _files = {};
 
-    TestFileSystem([Map<String, String>? files]) {
+    TestFileSystem([
+        Map<String, String>? files,
+    ]) {
         if (files != null) _files.addAll(files);
     }
 
@@ -45,7 +47,9 @@ final class TestFileSystem implements FileSystem {
 final class TestFileSystemPath implements FileSystemPath {
     final String _path;
 
-    TestFileSystemPath(this._path);
+    TestFileSystemPath(
+        this._path,
+    );
 
     @override
     String toString() => _path;

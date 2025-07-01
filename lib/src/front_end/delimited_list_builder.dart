@@ -47,7 +47,10 @@ final class DelimitedListBuilder {
 
     /// Creates a new [DelimitedListBuilder] for an argument list, collection
     /// literal, etc.
-    DelimitedListBuilder(this._visitor, [this._style = const ListStyle()]);
+    DelimitedListBuilder(
+        this._visitor, [
+        this._style = const ListStyle(),
+    ]);
 
     /// Creates the final [ListPiece] out of the added brackets, delimiters,
     /// elements, and style.

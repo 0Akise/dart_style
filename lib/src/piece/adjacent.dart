@@ -8,7 +8,9 @@ import 'piece.dart';
 final class AdjacentPiece extends Piece {
     final List<Piece> pieces;
 
-    AdjacentPiece(this.pieces);
+    AdjacentPiece(
+        this.pieces,
+    );
 
     @override
     void format(CodeWriter writer, State state) {

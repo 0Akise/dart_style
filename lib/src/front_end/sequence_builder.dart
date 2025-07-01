@@ -37,7 +37,9 @@ final class SequenceBuilder {
     /// Whether a blank line should be allowed after the current element.
     bool _allowBlank = false;
 
-    SequenceBuilder(this._visitor);
+    SequenceBuilder(
+        this._visitor,
+    );
 
     Piece build({bool forceSplit = false}) {
         // If the sequence only contains a single piece, just return it directly

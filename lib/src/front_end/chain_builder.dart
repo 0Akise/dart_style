@@ -70,7 +70,10 @@ final class ChainBuilder {
     /// The dotted property accesses and method calls following the target.
     final List<ChainCall> _calls = [];
 
-    ChainBuilder(this._visitor, this._root) {
+    ChainBuilder(
+        this._visitor,
+        this._root,
+    ) {
         if (_root case CascadeExpression cascade) {
             _visitTarget(cascade.target, cascadeTarget: true);
 

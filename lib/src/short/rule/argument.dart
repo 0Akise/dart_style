@@ -172,7 +172,11 @@ final class NamedRule extends ArgumentRule {
     /// If [collectionRule] is given, it is the rule used to split the collection
     /// arguments in the list. It must be provided if [leadingCollections] or
     /// [trailingCollections] is non-zero.
-    NamedRule(Rule? collectionRule, int leadingCollections, int trailingCollections) {
+    NamedRule(
+        Rule? collectionRule,
+        int leadingCollections,
+        int trailingCollections,
+    ) {
         if (leadingCollections > 0 || trailingCollections > 0) {
             // Split only before the first argument. Don't allow the collections to
             // split.

@@ -68,7 +68,10 @@ final class TestFile {
     }
 
     /// Reads the test file from [file].
-    factory TestFile._load(File file, String relativePath) {
+    factory TestFile._load(
+        File file,
+        String relativePath,
+    ) {
         var lines = file.readAsLinesSync();
 
         var isCompilationUnit = file.path.endsWith('.unit');
@@ -191,7 +194,13 @@ final class TestFile {
         return (TestOptions(leadingIndent, trailingCommas, experiments), line);
     }
 
-    TestFile._(this.path, this.pageWidth, this.options, this.comments, this.tests);
+    TestFile._(
+        this.path,
+        this.pageWidth,
+        this.options,
+        this.comments,
+        this.tests,
+    );
 
     /// The path to the test file, relative to the `test/` directory.
     final String path;
@@ -251,7 +260,12 @@ final class FormatTest {
     /// The expected output.
     final List<TestEntry> outputs;
 
-    FormatTest(this.line, this.options, this.input, this.outputs);
+    FormatTest(
+        this.line,
+        this.options,
+        this.input,
+        this.outputs,
+    );
 
     /// The line and description of the test.
     String get label {
@@ -273,7 +287,12 @@ final class TestEntry {
 
     final SourceCode code;
 
-    TestEntry(this.description, this.version, this.comments, this.code);
+    TestEntry(
+        this.description,
+        this.version,
+        this.comments,
+        this.code,
+    );
 }
 
 /// Options for configuring all tests in a file or an individual test.
@@ -288,7 +307,11 @@ final class TestOptions {
     /// Experiments that should be enabled when running this test.
     final List<String> experimentFlags;
 
-    TestOptions(this.leadingIndent, this.trailingCommas, this.experimentFlags);
+    TestOptions(
+        this.leadingIndent,
+        this.trailingCommas,
+        this.experimentFlags,
+    );
 }
 
 extension SourceCodeExtensions on SourceCode {

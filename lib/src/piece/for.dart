@@ -27,7 +27,11 @@ final class ForPiece extends Piece {
     ///         var element in list) { ... }
     final bool _indent;
 
-    ForPiece(this._forKeyword, this._parts, {required bool indent}): _indent = indent;
+    ForPiece(
+        this._forKeyword,
+        this._parts, {
+        required bool indent,
+    }): _indent = indent;
 
     @override
     void format(CodeWriter writer, State state) {
@@ -78,7 +82,12 @@ abstract base class ForInPiece extends Piece {
     /// The `in` keyword followed by the sequence expression.
     final Piece _sequence;
 
-    factory ForInPiece(Piece variable, Piece sequence, {bool canBlockSplitSequence = false, required bool version37}) {
+    factory ForInPiece(
+        Piece variable,
+        Piece sequence, {
+        bool canBlockSplitSequence = false,
+        required bool version37,
+    }) {
         if (version37) {
             return _ForInPieceV37(variable, sequence, canBlockSplitSequence: canBlockSplitSequence);
         } else {
@@ -86,7 +95,10 @@ abstract base class ForInPiece extends Piece {
         }
     }
 
-    ForInPiece._(this._variable, this._sequence);
+    ForInPiece._(
+        this._variable,
+        this._sequence,
+    );
 
     @override
     List<State> get additionalStates => const [State.split];
@@ -113,7 +125,10 @@ abstract base class ForInPiece extends Piece {
 
 /// A [ForInPiece] subclass for 3.8 and later style.
 final class _ForInPiece extends ForInPiece {
-    _ForInPiece(super._variable, super._sequence): super._();
+    _ForInPiece(
+        super._variable,
+        super._sequence,
+    ): super._();
 
     @override
     Set<Shape> allowedChildShapes(State state, Piece child) => switch (state) {
@@ -137,8 +152,11 @@ final class _ForInPieceV37 extends ForInPiece {
     ///     }
     final bool _canBlockSplitSequence;
 
-    _ForInPieceV37(super._variable, super._sequence, {bool canBlockSplitSequence = false}):
-    _canBlockSplitSequence = canBlockSplitSequence,
+    _ForInPieceV37(
+        super._variable,
+        super._sequence, {
+        bool canBlockSplitSequence = false,
+    }): _canBlockSplitSequence = canBlockSplitSequence,
         super._();
 
     @override

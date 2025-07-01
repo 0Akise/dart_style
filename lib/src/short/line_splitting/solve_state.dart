@@ -106,7 +106,10 @@ final class SolveState {
     /// states may diverge by binding unbound rules or not.
     late final Set<Rule> _boundRulesInUnboundLines = _initBoundRulesInUnboundLines();
 
-    SolveState(this._splitter, this._ruleValues) {
+    SolveState(
+        this._splitter,
+        this._ruleValues,
+    ) {
         Profile.count('Create SolveState');
 
         _calculateSplits();

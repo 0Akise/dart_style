@@ -47,7 +47,13 @@ final class SourceCode {
         return text.substring(selectionStart! + selectionLength!);
     }
 
-    SourceCode(this.text, {this.uri, this.isCompilationUnit = true, this.selectionStart, this.selectionLength}) {
+    SourceCode(
+        this.text, {
+        this.uri,
+        this.isCompilationUnit = true,
+        this.selectionStart,
+        this.selectionLength,
+    }) {
         // Must either provide both selection bounds or neither.
         if ((selectionStart == null) != (selectionLength == null)) {
             throw ArgumentError('If selectionStart is provided, selectionLength must be too.');

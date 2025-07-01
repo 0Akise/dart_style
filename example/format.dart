@@ -69,7 +69,11 @@ void _runFormatter(
     TrailingCommas trailingCommas = TrailingCommas.automate,
 }) {
     try {
-        var formatter = DartFormatter(languageVersion: version, pageWidth: pageWidth, trailingCommas: trailingCommas);
+        var formatter = DartFormatter(
+            languageVersion: version,
+            pageWidth: pageWidth,
+            trailingCommas: trailingCommas,
+        );
 
         String result;
         if (isCompilationUnit) {

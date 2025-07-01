@@ -15,9 +15,13 @@ import '../rule/rule.dart';
 final class RuleSet {
     List<int?> _values;
 
-    RuleSet(int numRules): this._(List.filled(numRules, null));
+    RuleSet(
+        int numRules,
+    ): this._(List.filled(numRules, null));
 
-    RuleSet._(this._values);
+    RuleSet._(
+        this._values,
+    );
 
     /// Returns `true` of [rule] is bound in this set.
     bool contains(Rule rule) {
@@ -133,7 +137,9 @@ final class SplitSet {
     late final int _cost;
 
     /// Creates a new empty split set for a line with [numChunks].
-    SplitSet(int numChunks): _columns = List.filled(numChunks, -1);
+    SplitSet(
+        int numChunks,
+    ): _columns = List.filled(numChunks, -1);
 
     /// Marks the chunk at [index] as starting at [column].
     void add(int index, int column) {

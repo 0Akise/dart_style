@@ -155,8 +155,13 @@ final class CodeWriter {
     /// beginning of the first line and [subsequentIndent] is the indentation of
     /// each line after that, independent of indentation created by pieces being
     /// written.
-    CodeWriter(this._pageWidth, int leadingIndent, int subsequentIndent, this._cache, this._solution):
-    _code = GroupCode(leadingIndent) {
+    CodeWriter(
+        this._pageWidth,
+        int leadingIndent,
+        int subsequentIndent,
+        this._cache,
+        this._solution,
+    ): _code = GroupCode(leadingIndent) {
         _indentStack.add(_IndentLevel(Indent.none, leadingIndent));
 
         // Track the leading indent before the first line.
@@ -565,7 +570,9 @@ class _FormatState {
     /// How a newline affects the shape of this piece.
     ShapeMode mode = ShapeMode.merge;
 
-    _FormatState(this.piece);
+    _FormatState(
+        this.piece,
+    );
 }
 
 /// Determines how a newline inside a piece or a child piece affects the shape
@@ -598,8 +605,14 @@ final class _IndentLevel {
     final int spaces;
     final int collapsible;
 
-    _IndentLevel.v37(this.spaces, this.collapsible): type = Indent.none;
-    _IndentLevel(this.type, this.spaces): collapsible = 0;
+    _IndentLevel.v37(
+        this.spaces,
+        this.collapsible,
+    ): type = Indent.none;
+    _IndentLevel(
+        this.type,
+        this.spaces,
+    ): collapsible = 0;
 
     @override
     String toString() => '${type.name}:$spaces';

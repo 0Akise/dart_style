@@ -81,7 +81,9 @@ base class Rule with FastHash {
     /// rules.
     bool get splitsOnInnerRules => true;
 
-    Rule([this._cost = Cost.normal]) {
+    Rule([
+        this._cost = Cost.normal,
+    ]) {
         Profile.count('Create Rule');
     }
 
@@ -269,5 +271,9 @@ final class _Constraint {
     /// rule will end up having.
     final int otherValue;
 
-    _Constraint(this.min, this.max, this.otherValue);
+    _Constraint(
+        this.min,
+        this.max,
+        this.otherValue,
+    );
 }

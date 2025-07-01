@@ -55,13 +55,21 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
     NodeContext _parentContext = NodeContext.none;
 
     /// Create a new visitor that will be called to visit the code in [source].
-    factory AstNodeVisitor(DartFormatter formatter, LineInfo lineInfo, SourceCode source) {
+    factory AstNodeVisitor(
+        DartFormatter formatter,
+        LineInfo lineInfo,
+        SourceCode source,
+    ) {
         var comments = CommentWriter(lineInfo);
         var pieces = PieceWriter(formatter, source, comments);
         return AstNodeVisitor._(formatter, pieces, comments);
     }
 
-    AstNodeVisitor._(this.formatter, this.pieces, this.comments) {
+    AstNodeVisitor._(
+        this.formatter,
+        this.pieces,
+        this.comments,
+    ) {
         pieces.bindVisitor(this);
     }
 
@@ -1665,9 +1673,10 @@ final class AstNodeVisitor extends ThrowingAstVisitor<void> with PieceFactory {
         var positionalFields = node.positionalFields;
 
         // Single positional record types always have a trailing comma.
-        var listStyle = positionalFields.length == 1 && namedFields == null
-                ? const ListStyle(commas: Commas.alwaysTrailing)
-                : const ListStyle(commas: Commas.trailing);
+        var listStyle =
+                positionalFields.length == 1 && namedFields == null
+                        ? const ListStyle(commas: Commas.alwaysTrailing)
+                        : const ListStyle(commas: Commas.trailing);
         var builder = DelimitedListBuilder(this, listStyle);
 
         // If all parameters are optional, put the `{` right after `(`.

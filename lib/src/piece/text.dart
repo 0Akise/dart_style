@@ -123,7 +123,9 @@ final class CodePiece extends TextPiece {
     /// Pieces for any comments that hang off the same line as this code.
     final List<Piece> _hangingComments = [];
 
-    CodePiece([this._leadingComments = const []]);
+    CodePiece([
+        this._leadingComments = const [],
+    ]);
 
     void addHangingComment(Piece comment) {
         _hangingComments.add(comment);
@@ -162,7 +164,9 @@ final class CommentPiece extends TextPiece {
     /// Whitespace at the end of the comment.
     final Whitespace _trailingWhitespace;
 
-    CommentPiece(this._trailingWhitespace);
+    CommentPiece(
+        this._trailingWhitespace,
+    );
 
     @override
     void format(CodeWriter writer, State state) {
@@ -193,8 +197,11 @@ final class EnableFormattingCommentPiece extends CommentPiece {
     /// before `//`.
     final int _sourceOffset;
 
-    EnableFormattingCommentPiece(this._sourceOffset, super._trailingWhitespace, {required bool enable}):
-    _enabled = enable;
+    EnableFormattingCommentPiece(
+        this._sourceOffset,
+        super._trailingWhitespace, {
+        required bool enable,
+    }): _enabled = enable;
 
     @override
     void format(CodeWriter writer, State state) {

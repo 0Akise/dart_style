@@ -126,7 +126,13 @@ final class Solution implements Comparable<Solution> {
         return solution;
     }
 
-    Solution._(Piece root, this._cost, this._pieceStates, this._allowedStates, [State? rootState]) {
+    Solution._(
+        Piece root,
+        this._cost,
+        this._pieceStates,
+        this._allowedStates, [
+        State? rootState,
+    ]) {
         Profile.count('create Solution');
 
         // If we're formatting a subtree of a larger Piece tree that binds [root]

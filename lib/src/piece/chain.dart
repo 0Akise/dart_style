@@ -402,7 +402,10 @@ final class ChainCall {
 
     final CallType type;
 
-    ChainCall(this._call, this.type);
+    ChainCall(
+        this._call,
+        this.type,
+    );
 
     bool get canSplit => type == CallType.splittableCall || type == CallType.blockFormatCall;
 

@@ -133,7 +133,9 @@ Future<AnalysisOptions> readAnalysisOptions(
 final class PackageResolutionException implements Exception {
     final String _message;
 
-    PackageResolutionException(this._message);
+    PackageResolutionException(
+        this._message,
+    );
 
     @override
     String toString() => _message;

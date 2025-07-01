@@ -77,7 +77,11 @@ final class PieceWriter {
     /// previous code or adding a [SpacePiece] yet.
     bool _pendingSpace = false;
 
-    PieceWriter(this._formatter, this._source, this._comments);
+    PieceWriter(
+        this._formatter,
+        this._source,
+        this._comments,
+    );
 
     /// Wires the [PieceWriter] to the [AstNodeVisitor] (which implements
     /// [PieceFactory]) so that [PieceWriter] can visit nodes.
