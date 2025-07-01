@@ -1477,18 +1477,12 @@ mixin PieceFactory {
     }
 
     bool _shouldPreferSplitAtOperator(AstNode rightHandSide) {
-        return _hasArgumentListThatWillSplit(rightHandSide);
-    }
-
-    bool _hasArgumentListThatWillSplit(AstNode node) {
         ArgumentList? argumentList;
 
-        if (node is MethodInvocation) {
-            argumentList = node.argumentList;
-        } else if (node is InstanceCreationExpression) {
-            argumentList = node.argumentList;
-        } else if (node is FunctionExpressionInvocation) {
-            argumentList = node.argumentList;
+        if (rightHandSide is InstanceCreationExpression) {
+            argumentList = rightHandSide.argumentList;
+        } else if (rightHandSide is MethodInvocation && rightHandSide.target == null) {
+            argumentList = rightHandSide.argumentList;
         }
 
         if (argumentList != null) {
@@ -1498,12 +1492,6 @@ mixin PieceFactory {
                 if (hasNamed) {
                     return true;
                 }
-            }
-        }
-
-        for (var child in node.childEntities) {
-            if (child is AstNode && _hasArgumentListThatWillSplit(child)) {
-                return true;
             }
         }
 
