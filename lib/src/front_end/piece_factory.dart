@@ -1467,7 +1467,7 @@ mixin PieceFactory {
         });
 
         var rightPiece = nodePiece(rightHandSide, commaAfter: includeComma, context: rightHandSideContext);
-        var shouldPreferSplitAtOperator = _shouldPreferSplitAtOperator(rightHandSide);
+        var shouldPreferSplitAtOperator = operator.type == TokenType.EQ && _shouldPreferSplitAtOperator(rightHandSide);
 
         if (shouldPreferSplitAtOperator) {
             pieces.add(_ForcesSplitAssignPiece(leftPiece, rightPiece));
