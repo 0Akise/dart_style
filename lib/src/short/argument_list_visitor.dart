@@ -324,6 +324,8 @@ final class ArgumentSublist {
     /// If all arguments are blocks, this is zero.
     final int _trailingBlocks;
 
+    final bool _shouldAllowSplitting;
+
     /// The rule used to split the bodies of all block arguments.
     Rule get blockRule => _blockRule!;
     Rule? _blockRule;
@@ -336,6 +338,7 @@ final class ArgumentSublist {
         var argumentLists = _splitArgumentLists(arguments);
         var positional = argumentLists[0];
         var named = argumentLists[1];
+        var shouldAllowSplitting = arguments.length > 2 && named.isNotEmpty;
 
         var blocks = <Expression, Token>{};
         for (var argument in arguments) {
@@ -367,7 +370,15 @@ final class ArgumentSublist {
         // Ignore any blocks in the middle of the argument list.
         if (leadingBlocks == 0 && trailingBlocks == 0) blocks.clear();
 
-        return ArgumentSublist._(allArguments, positional, named, blocks, leadingBlocks, trailingBlocks);
+        return ArgumentSublist._(
+            allArguments,
+            positional,
+            named,
+            blocks,
+            leadingBlocks,
+            trailingBlocks,
+            shouldAllowSplitting,
+        );
     }
 
     ArgumentSublist._(
@@ -377,15 +388,39 @@ final class ArgumentSublist {
         this._blocks,
         this._leadingBlocks,
         this._trailingBlocks,
+        this._shouldAllowSplitting,
     );
 
     void visit(SourceVisitor visitor) {
+        if (!_shouldAllowSplitting) {
+            _writeArgumentsWithoutSplitting(visitor);
+
+            return;
+        }
+
         if (_blocks.isNotEmpty) {
             _blockRule = Rule(Cost.splitBlocks);
         }
 
         var rule = _visitPositional(visitor);
         _visitNamed(visitor, rule);
+    }
+
+    void _writeArgumentsWithoutSplitting(SourceVisitor visitor) {
+        for (var i = 0; i < _allArguments.length; i++) {
+            if (i > 0) visitor.space();
+
+            var argument = _allArguments[i];
+            if (argument is NamedExpression) {
+                visitor.visitNamedArgument(argument);
+            } else {
+                visitor.visit(argument);
+            }
+
+            if (argument.hasCommaAfter) {
+                visitor.token(argument.endToken.next);
+            }
+        }
     }
 
     /// Writes the positional arguments, if any.
