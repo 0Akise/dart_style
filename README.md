@@ -6,6 +6,97 @@ simply speaking, disabling formatter configuration is ridiculous.
 
 mkakabaev made a fascinating tutorial of how-to-compile this dart project. [mkakabaev/dart_style](https://github.com/mkakabaev/dart_style?tab=readme-ov-file) (also a fork) please check it out.
 
+this customized formatter changes this code:
+```dart
+class LoadingScreen extends StatefulWidget {
+  final String? mLoadingMessage;
+  final bool mShowAdSpace;
+
+  const LoadingScreen({super.key, this.mLoadingMessage, this.mShowAdSpace = true});
+
+  @override
+  State<LoadingScreen> createState() => LoadingScreenState();
+}
+
+class LoadingScreenState extends State<LoadingScreen> with TickerProviderStateMixin {
+  late AnimationController mAnimationController;
+  late Animation<double> mFadeAnimation;
+  late Animation<double> mScaleAnimation;
+
+  Widget BuildAppLogo() {
+    return AnimatedBuilder(
+      animation: mAnimationController,
+      builder: (context, child) {
+        return Transform.scale(
+          scale: mScaleAnimation.value,
+          child: FadeTransition(
+            opacity: mFadeAnimation,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(color: Colors.white),
+              child: const Center(child: FlutterLogo(size: 120)),
+            ),
+          ),
+        );
+      },
+    );
+  }
+  // ...
+```
+into this:
+```dart
+class LoadingScreen extends StatefulWidget {
+    final String? mLoadingMessage;
+    final bool mShowAdSpace;
+
+    const LoadingScreen({
+        super.key,
+        this.mLoadingMessage,
+        this.mShowAdSpace = true,
+    });
+
+    @override
+    State<LoadingScreen> createState() => LoadingScreenState();
+}
+
+class LoadingScreenState extends State<LoadingScreen> with TickerProviderStateMixin {
+    late AnimationController mAnimationController;
+    late Animation<double> mFadeAnimation;
+    late Animation<double> mScaleAnimation;
+
+    Widget BuildAppLogo() {
+        return AnimatedBuilder(
+            animation: mAnimationController,
+            builder: (context, child) {
+                return Transform.scale(
+                    scale: mScaleAnimation.value,
+                    child: FadeTransition(
+                        opacity: mFadeAnimation,
+                        child: Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(color: Colors.white),
+                            child: const Center(child: FlutterLogo(size: 120)),
+                        ),
+                    ),
+                );
+            },
+        );
+    }
+    // ...
+```
+
+# Major changes from original dartfmt
+- 4-spaces indentation
+- 120 max line width by default(you still need to manage `analysis_options.yaml` and your IDE settings)
+- no more one-liner constructor initialization
+- breaks line if there are more than two named parameter in arguments list
+- equal assignment line break for classes/constructor
+- better `:` constructor initialization that matches 4-spaces indentation
+
+WARNING: My code uses Hungarian notation(with leading `m` naming with class members), formatter itself doesn't change it back to `_` naming!
+
 ---
 
 The dart_style package defines an opinionated, [minimally configurable][config]
