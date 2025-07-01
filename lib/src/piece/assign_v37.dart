@@ -216,38 +216,38 @@ final class AssignPieceV37 extends Piece {
     State? fixedStateForPageWidth(int pageWidth) {
         // If either side (or both) can block split, then they may allow a long
         // assignment to still not end up splitting at the operator.
-        //if (_canBlockSplitLeft || _canBlockSplitRight) return null;
+        if (_canBlockSplitLeft || _canBlockSplitRight) return null;
+
+        // Edge case: If the left operand is only a single character, then splitting
+        // at the operator won't actually make the line any smaller, so don't apply
+        // the optimization in that case:
         //
-        //// Edge case: If the left operand is only a single character, then splitting
-        //// at the operator won't actually make the line any smaller, so don't apply
-        //// the optimization in that case:
-        ////
-        ////     e = someVeryLongExpression;
-        ////
-        //// Is no worse than:
-        ////
-        ////     e =
-        ////         someVeryLongExpression;
-        //if (_left case var left? when left.totalCharacters == 1) return null;
+        //     e = someVeryLongExpression;
         //
-        //// If either operand contains a newline or the whole assignment doesn't
-        //// fit then it will split at the operator since there's no other way it
-        //// can split because there are no block operands.
-        //var totalLength = 0;
-        //if (_left case var left? when !_canBlockSplitLeft) {
-        //    if (left.containsHardNewline) return _atOperator;
+        // Is no worse than:
         //
-        //    totalLength += left.totalCharacters;
-        //}
-        //
-        //totalLength += _operator.totalCharacters;
-        //
-        //if (!_canBlockSplitRight) {
-        //    if (_right.containsHardNewline) return _atOperator;
-        //    totalLength += _right.totalCharacters;
-        //}
-        //
-        //if (totalLength > pageWidth) return _atOperator;
+        //     e =
+        //         someVeryLongExpression;
+        if (_left case var left? when left.totalCharacters == 1) return null;
+
+        // If either operand contains a newline or the whole assignment doesn't
+        // fit then it will split at the operator since there's no other way it
+        // can split because there are no block operands.
+        var totalLength = 0;
+        if (_left case var left? when !_canBlockSplitLeft) {
+            if (left.containsHardNewline) return _atOperator;
+
+            totalLength += left.totalCharacters;
+        }
+
+        totalLength += _operator.totalCharacters;
+
+        if (!_canBlockSplitRight) {
+            if (_right.containsHardNewline) return _atOperator;
+            totalLength += _right.totalCharacters;
+        }
+
+        if (totalLength > pageWidth) return _atOperator;
 
         return null;
     }

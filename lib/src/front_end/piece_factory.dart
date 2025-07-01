@@ -1469,7 +1469,11 @@ mixin PieceFactory {
         var rightPiece = nodePiece(rightHandSide, commaAfter: includeComma, context: rightHandSideContext);
         var shouldPreferSplitAtOperator = _shouldPreferSplitAtOperator(rightHandSide);
 
-        pieces.add(AssignPiece(leftPiece, rightPiece, avoidSplit: !shouldPreferSplitAtOperator));
+        if (shouldPreferSplitAtOperator) {
+            pieces.add(_ForcesSplitAssignPiece(leftPiece, rightPiece));
+        } else {
+            pieces.add(AssignPiece(leftPiece, rightPiece, avoidSplit: true));
+        }
     }
 
     bool _shouldPreferSplitAtOperator(AstNode rightHandSide) {
@@ -1736,5 +1740,32 @@ mixin PieceFactory {
     /// token if there is one.
     Piece tokenPiece(Token token, {bool commaAfter = false}) {
         return pieces.tokenPiece(token, commaAfter: commaAfter);
+    }
+}
+
+final class _ForcesSplitAssignPiece extends Piece {
+    final Piece _left;
+    final Piece _right;
+
+    _ForcesSplitAssignPiece(this._left, this._right);
+
+    @override
+    void format(CodeWriter writer, State state) {
+        // Always format as if in split state
+        writer.pushIndent(Indent.expression);
+        writer.setShapeMode(ShapeMode.beforeHeadline);
+        writer.format(_left);
+        writer.setShapeMode(ShapeMode.afterHeadline);
+        writer.newline();
+        writer.popIndent();
+        writer.pushIndent(Indent.assignment);
+        writer.format(_right);
+        writer.popIndent();
+    }
+
+    @override
+    void forEachChild(void Function(Piece piece) callback) {
+        callback(_left);
+        callback(_right);
     }
 }
