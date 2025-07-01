@@ -1467,14 +1467,15 @@ mixin PieceFactory {
         });
 
         var rightPiece = nodePiece(rightHandSide, commaAfter: includeComma, context: rightHandSideContext);
-
         var shouldPreferSplitAtOperator = _shouldPreferSplitAtOperator(rightHandSide);
 
         pieces.add(AssignPiece(leftPiece, rightPiece, avoidSplit: !shouldPreferSplitAtOperator));
     }
 
     bool _shouldPreferSplitAtOperator(AstNode rightHandSide) {
-        return _hasArgumentListThatWillSplit(rightHandSide);
+        var result = _hasArgumentListThatWillSplit(rightHandSide);
+        print('DEBUG: _shouldPreferSplitAtOperator for ${rightHandSide.runtimeType}: $result');
+        return result;
     }
 
     bool _hasArgumentListThatWillSplit(AstNode node) {
@@ -1490,15 +1491,16 @@ mixin PieceFactory {
 
         if (argumentList != null) {
             var arguments = argumentList.arguments;
+            print('DEBUG: Found argumentList with ${arguments.length} arguments');
             if (arguments.length >= 2) {
                 var hasNamed = arguments.any((arg) => arg is NamedExpression);
+                print('DEBUG: hasNamed: $hasNamed');
                 if (hasNamed) {
                     return true;
                 }
             }
         }
 
-        // Check child nodes recursively
         for (var child in node.childEntities) {
             if (child is AstNode && _hasArgumentListThatWillSplit(child)) {
                 return true;
