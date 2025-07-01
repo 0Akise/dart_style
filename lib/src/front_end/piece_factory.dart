@@ -1468,7 +1468,44 @@ mixin PieceFactory {
 
         var rightPiece = nodePiece(rightHandSide, commaAfter: includeComma, context: rightHandSideContext);
 
-        pieces.add(AssignPiece(leftPiece, rightPiece));
+        var shouldPreferSplitAtOperator = _shouldPreferSplitAtOperator(rightHandSide);
+
+        pieces.add(AssignPiece(leftPiece, rightPiece, avoidSplit: !shouldPreferSplitAtOperator));
+    }
+
+    bool _shouldPreferSplitAtOperator(AstNode rightHandSide) {
+        return _hasArgumentListThatWillSplit(rightHandSide);
+    }
+
+    bool _hasArgumentListThatWillSplit(AstNode node) {
+        ArgumentList? argumentList;
+
+        if (node is MethodInvocation) {
+            argumentList = node.argumentList;
+        } else if (node is InstanceCreationExpression) {
+            argumentList = node.argumentList;
+        } else if (node is FunctionExpressionInvocation) {
+            argumentList = node.argumentList;
+        }
+
+        if (argumentList != null) {
+            var arguments = argumentList.arguments;
+            if (arguments.length >= 2) {
+                var hasNamed = arguments.any((arg) => arg is NamedExpression);
+                if (hasNamed) {
+                    return true;
+                }
+            }
+        }
+
+        // Check child nodes recursively
+        for (var child in node.childEntities) {
+            if (child is AstNode && _hasArgumentListThatWillSplit(child)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// Writes the `<variable> in <expression>` part of an identifier or pattern
