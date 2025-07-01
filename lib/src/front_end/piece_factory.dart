@@ -1473,9 +1473,7 @@ mixin PieceFactory {
     }
 
     bool _shouldPreferSplitAtOperator(AstNode rightHandSide) {
-        var result = _hasArgumentListThatWillSplit(rightHandSide);
-        print('DEBUG: _shouldPreferSplitAtOperator for ${rightHandSide.runtimeType}: $result');
-        return result;
+        return _hasArgumentListThatWillSplit(rightHandSide);
     }
 
     bool _hasArgumentListThatWillSplit(AstNode node) {
@@ -1491,10 +1489,8 @@ mixin PieceFactory {
 
         if (argumentList != null) {
             var arguments = argumentList.arguments;
-            print('DEBUG: Found argumentList with ${arguments.length} arguments');
             if (arguments.length >= 2) {
                 var hasNamed = arguments.any((arg) => arg is NamedExpression);
-                print('DEBUG: hasNamed: $hasNamed');
                 if (hasNamed) {
                     return true;
                 }
